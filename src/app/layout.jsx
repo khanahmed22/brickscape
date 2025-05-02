@@ -14,8 +14,8 @@ import { dark } from "@clerk/themes";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "InkWise AI",
-  description:"Unleash your creativity with Inkwise AI",
+  title: "Brickscape",
+  description:"",
   icons: {
     icon: "/inkwiselogo.svg", 
   },

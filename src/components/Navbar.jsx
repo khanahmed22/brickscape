@@ -58,7 +58,7 @@ export default function Navbar() {
           >
             <img src="/inkwiselogo.svg" alt="Inkwise Logo" className="w-[36px] h-[36px]" />
             <span className="font-bold text-xl text-primary hidden sm:inline-block">
-              OLX
+              Brickscape
             </span>
           </motion.div>
         </Link>
@@ -138,7 +138,7 @@ export default function Navbar() {
                     className="w-[32px] h-[32px] mr-2"
                   />
                   <span className="font-bold text-lg text-primary">
-                    OLX
+                    Brickscape
                   </span>
                 </div>
 
