@@ -17,7 +17,7 @@ export const metadata = {
   title: "Brickscape",
   description:"",
   icons: {
-    icon: "/inkwiselogo.svg", 
+    icon: "/brickscapeLogo.svg", 
   },
 };
 

@@ -56,7 +56,7 @@ export default function Navbar() {
             transition={{ duration: 0.5 }}
             className="flex items-center gap-x-2"
           >
-            <img src="/inkwiselogo.svg" alt="Inkwise Logo" className="w-[36px] h-[36px]" />
+            <img src="/brickscapeLogo.svg" alt="brickscape Logo" className="w-[36px] h-[36px]" />
             <span className="font-bold text-xl text-primary hidden sm:inline-block">
               Brickscape
             </span>
@@ -133,7 +133,7 @@ export default function Navbar() {
               <div className="px-2 py-6 flex flex-col h-full">
                 <div className="mb-4 flex items-center">
                   <img
-                    src="/inkwiselogo.svg"
+                    src="/brickscapeLogo.svg"
                     alt=""
                     className="w-[32px] h-[32px] mr-2"
                   />
