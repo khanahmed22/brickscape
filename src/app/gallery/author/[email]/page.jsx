@@ -73,7 +73,7 @@ export default function AuthorPage() {
         setAuthor(authorData)
         setPosts(postsData || [])
       } catch (error) {
-        console.error("Error fetching author data:", error)
+        console.error("Error fetching seller data:", error)
       } finally {
         setLoading(false)
       }
@@ -154,13 +154,13 @@ export default function AuthorPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Author Not Found</CardTitle>
+            <CardTitle>Seller Not Found</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>We couldn&apos;t find information for this author.</p>
+            <p>We couldn&apos;t find information for this seller.</p>
           </CardContent>
           <CardFooter>
-            <Button onClick={() => router.push("/gallery")}>Return to Gallery</Button>
+            <Button onClick={() => router.push("/gallery")}>Return to Property Search</Button>
           </CardFooter>
         </Card>
       </div>
@@ -176,12 +176,12 @@ export default function AuthorPage() {
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="text-2xl">Author Profile</CardTitle>
+          <CardTitle className="text-2xl">Seller Profile</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col md:flex-row gap-6">
             <Avatar className="h-32 w-32">
-              <AvatarImage src={author.avatar} alt={author.name || "Author"} />
+              <AvatarImage src={author.avatar} alt={author.name || "Seller"} />
               <AvatarFallback>
                 <User className="h-16 w-16" />
               </AvatarFallback>
@@ -206,7 +206,7 @@ export default function AuthorPage() {
                 <div className="flex items-center text-muted-foreground">
                   <BookOpen className="mr-2 h-4 w-4" />
                   <span>
-                    {author.postCount} {author.postCount === 1 ? "post" : "posts"}
+                    {author.postCount} {author.postCount === 1 ? "property" : "properties"}
                   </span>
                 </div>
               </div>
@@ -218,12 +218,12 @@ export default function AuthorPage() {
       </Card>
 
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Posts by {author.name}</h2>
+        <h2 className="text-2xl font-bold mb-4">Properties by {author.name}</h2>
 
         {posts.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">No posts found for this author.</p>
+              <p className="text-muted-foreground">No properties found from this seller.</p>
             </CardContent>
           </Card>
         ) : (

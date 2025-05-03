@@ -74,13 +74,11 @@ export default function Navbar() {
 
           
 
-          <NavLink href="/gallery" active={isActive("/gallery")}>
-            Gallery
+          <NavLink href="/propertySearch" active={isActive("/propertySearch")}>
+            Buy/Sell
           </NavLink>
 
-          <NavLink href="/pricing" active={isActive("/pricing")}>
-            Pricing
-          </NavLink>
+          
 
           <NavLink href="/contact" active={isActive("/contact")}>
             Contact
@@ -161,15 +159,13 @@ export default function Navbar() {
                   </SignedIn>
 
                   <MobileNavLink
-                    href="/gallery"
+                    href="/propertySearch"
                     active={isActive("/dashboard")}
                   >
-                    Gallery
+                    Buy/Sell
                   </MobileNavLink>
 
-                  <MobileNavLink href="/pricing" active={isActive("/pricing")}>
-                    Pricing
-                  </MobileNavLink>
+                 
 
                   <MobileNavLink href="/contact" active={isActive("/contact")}>
                     Contact

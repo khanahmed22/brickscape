@@ -12,6 +12,8 @@ import {
   LayoutGrid,
   LayoutList,
   Sparkles,
+  MapPin,
+  SquareDashedBottom,
 } from "lucide-react";
 import { useSession, useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,6 +41,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator"
+
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -72,7 +76,7 @@ export default function Dashboard() {
 
   function handleCreateButton() {
     setLoading(true);
-    router.push("/createBlog");
+    router.push("/createProperty");
   }
 
   function handleViewBlog(slug) {
@@ -161,18 +165,18 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center gap-x-3">
                 <h1 className="text-3xl font-bold  md:text-4xl max-md:text-lg">
-                  Your Ads
+                  Your Published Properties
                 
                 </h1>
 
                 
-                <Badge variant="outline">Private</Badge>
+               
                   
 
               </div>
               
               <p className="text-muted-foreground mt-1 max-md:text-sm">
-                Manage and explore your creative content
+                Manage your properties
               </p>
             </div>
             <Button
@@ -352,20 +356,8 @@ export default function Dashboard() {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pb-4 flex-grow">
-                          <p className="text-muted-foreground line-clamp-2">
-                            Located: {task.location}
-                          </p>
 
-                          <p className="text-muted-foreground line-clamp-2">
-                            USD: {task.price}
-                          </p>
-
-                          <p className="text-muted-foreground line-clamp-2">
-                            Area Sq ft: {task.area}
-                          </p>
-                          
-
-                          <div className="flex flex-wrap gap-2 mb-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mb-2 mt-2">
                             {task.genre ? (
                               <Badge variant="secondary" className="text-xs">
                                 {task.genre}
@@ -379,6 +371,22 @@ export default function Dashboard() {
                               </Badge>
                             )}
                           </div>
+                         
+
+                          
+
+                          <div className="flex items-center justify-between text-muted-foreground line-clamp-2">
+                          <span className="flex items-center space-x-2"><MapPin size={15}/> {task.location}</span> <span className="flex items-center space-x-2"><SquareDashedBottom size={15}/> {task.area} Sq ft</span>
+                          </div>
+
+                          <Separator className="mb-2 mt-2"/>
+
+                          <p className="text-white line-clamp-2 font-bold text-lg">
+                            $ {task.price}
+                          </p>
+                          
+
+                          
                         </CardContent>
                         <CardFooter className="pt-0 pb-4">
                           <Button
