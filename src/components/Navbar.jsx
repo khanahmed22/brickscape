@@ -9,6 +9,7 @@ import { ModeToggle } from "./ThemeToggle";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Menu, X, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -34,6 +35,8 @@ export default function Navbar() {
   }, [pathname]);
 
   const isActive = (path) => pathname === path;
+
+  const router = useRouter()
 
   return (
     <header
@@ -69,11 +72,7 @@ export default function Navbar() {
             Home
           </NavLink>
 
-          <SignedIn>
-            <NavLink href="/dashboard" active={isActive("/dashboard")}>
-              Dashboard
-            </NavLink>
-          </SignedIn>
+          
 
           <NavLink href="/gallery" active={isActive("/gallery")}>
             Gallery
@@ -93,6 +92,10 @@ export default function Navbar() {
           <ModeToggle />
 
           <SignedIn>
+            <Button onClick={()=>router.push("/dashboard")}>Dashboard</Button>
+          </SignedIn>
+
+          <SignedIn>
             <UserButton
               afterSignOutUrl="/"
               appearance={{
@@ -102,6 +105,7 @@ export default function Navbar() {
               }}
             />
           </SignedIn>
+          
 
           <SignedOut>
             <Link href="/sign-in" prefetch={false} className="hidden lg:block">
@@ -134,7 +138,7 @@ export default function Navbar() {
                 <div className="mb-4 flex items-center">
                   <img
                     src="/brickscapeLogo.svg"
-                    alt=""
+                    alt="Brickscape Logo"
                     className="w-[32px] h-[32px] mr-2"
                   />
                   <span className="font-bold text-lg text-primary">

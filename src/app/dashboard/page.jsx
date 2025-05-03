@@ -311,7 +311,7 @@ export default function Dashboard() {
                   <TabsTrigger value="recent">Recently Updated</TabsTrigger>
                 </TabsList>
                 <p className="text-sm text-muted-foreground">
-                  Showing {sortedTasks.length} blog
+                  Showing {sortedTasks.length} listing
                   {sortedTasks.length !== 1 ? "s" : ""}
                 </p>
               </div>
