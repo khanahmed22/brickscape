@@ -293,7 +293,7 @@ export default function PropertySearchPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Search Section */}
-      <section className="py-8 px-4 md:px-8 lg:px-12 bg-muted/30">
+      <section className="py-8 px-4 md:px-8 lg:px-12 ">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-6">
             <Button
@@ -311,7 +311,7 @@ export default function PropertySearchPage() {
             initial="hidden"
             animate="visible"
             variants={fadeIn}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
+            className="bg-secondary rounded-lg shadow-md overflow-hidden"
           >
             <Tabs
               defaultValue={activeTab}

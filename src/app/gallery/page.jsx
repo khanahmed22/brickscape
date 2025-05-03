@@ -288,7 +288,7 @@ export default function HomePage() {
             initial="hidden"
             animate="visible"
             variants={slideUp}
-            className="bg-white/95 backdrop-blur-md rounded-lg shadow-xl overflow-hidden"
+            className=" backdrop-blur-md rounded-lg shadow-xl overflow-hidden"
           >
             <Tabs defaultValue="buy" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="px-4 pt-4">
@@ -368,7 +368,7 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
 
-                  <Button size="lg" className="h-12" onClick={handleSearch}>
+                  <Button size="lg" className="h-12 bg-primary" onClick={handleSearch}>
                     Search Properties
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
