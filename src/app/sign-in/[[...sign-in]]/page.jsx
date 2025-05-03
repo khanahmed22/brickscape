@@ -45,9 +45,9 @@ export default function SignInPage() {
           <div className="mb-6 flex items-center">
             <div className="relative w-10 h-10 mr-3 overflow-hidden">
               <img
-                src="/inkwiselogo.svg"
+                src="/brickscapeLogo.svg"
                 className="w-full h-full object-contain"
-                alt="Inkwise AI Logo"
+                alt="Brickwise"
               />
               <div
                 className="absolute inset-0 bg-primary/10 rounded-full animate-pulse"
@@ -55,59 +55,23 @@ export default function SignInPage() {
               ></div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Inkwise AI</h1>
+              <h1 className="text-2xl font-bold">Brickwise</h1>
               <p className="text-sm text-muted-foreground">
-                Smart Blog Platform
+                Real Estate Made Easy
               </p>
             </div>
           </div>
 
           <h2 className="text-3xl md:text-4xl max-md:text-2xl font-bold mb-4">
-            Welcome back to your{" "}
-            <span className="text-primary">creative journey</span>
+            Welcome back{" "}
+           
           </h2>
 
           <p className="text-muted-foreground mb-8">
-            Sign in to access your AI-powered blog creation tools, manage your
-            content, and continue crafting exceptional stories.
+            Sign In to become Seller or Buyer
           </p>
 
-          <div className="hidden md:block space-y-6">
-            <div className="grid grid-cols-1 gap-4">
-              {[
-                {
-                  icon: <Sparkles className="h-5 w-5 text-primary" />,
-                  title: "AI-Powered Writing",
-                  description:
-                    "Create, edit, and enhance your content with advanced AI tools",
-                },
-                {
-                  icon: <PenTool className="h-5 w-5 text-primary" />,
-                  title: "Intuitive Editor",
-                  description:
-                    "Enjoy a seamless writing experience with our user-friendly interface",
-                },
-                {
-                  icon: <Zap className="h-5 w-5 text-primary" />,
-                  title: "Instant Publishing",
-                  description:
-                    "Share your content with the world in just a few clicks",
-                },
-              ].map((feature, index) => (
-                <div key={index} className="flex items-start">
-                  <div className="bg-primary/10 p-2 rounded-full mr-3">
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+         
         </motion.div>
 
         {/* Right Column - Sign In Form */}
