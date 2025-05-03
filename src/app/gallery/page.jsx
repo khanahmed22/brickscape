@@ -408,7 +408,7 @@ export default function HomePage() {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Brickscape</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We're committed to providing exceptional service and making your property journey seamless and successful
+              We&apos;re committed to providing exceptional service and making your property journey seamless and successful
             </p>
           </motion.div>
 
@@ -617,7 +617,7 @@ export default function HomePage() {
           >
             <h2 className="text-3xl font-bold mb-4">What Our Clients Say</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Don't just take our word for it - hear from some of our satisfied clients
+              Don&apos;t just take our word for it - hear from some of our satisfied clients
             </p>
           </motion.div>
 
@@ -639,8 +639,8 @@ export default function HomePage() {
                     <Award className="h-5 w-5 text-yellow-500" />
                   </div>
                   <p className="italic mb-6">
-                    "Brickscape made selling my home an incredibly smooth process. Their team was professional,
-                    responsive, and got me a great price. I couldn't be happier with the service."
+                  &quot;Brickscape made selling my home an incredibly smooth process. Their team was professional,
+                    responsive, and got me a great price. I couldn&apos;t be happier with the service.&quot;
                   </p>
                   <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold mr-3">
@@ -666,8 +666,8 @@ export default function HomePage() {
                     <Award className="h-5 w-5 text-yellow-500" />
                   </div>
                   <p className="italic mb-6">
-                    "As first-time homebuyers, we were nervous about the process. Brickscape guided us every step of the
-                    way and helped us find our dream home within our budget."
+                  &quot;As first-time homebuyers, we were nervous about the process. Brickscape guided us every step of the
+                    way and helped us find our dream home within our budget.&quot;
                   </p>
                   <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold mr-3">
@@ -693,8 +693,8 @@ export default function HomePage() {
                     <Award className="h-5 w-5 text-yellow-500" />
                   </div>
                   <p className="italic mb-6">
-                    "I've been renting through Brickscape for three years now. Their property management is exceptional,
-                    and any maintenance issues are addressed promptly."
+                  &quot;I&apos;ve been renting through Brickscape for three years now. Their property management is exceptional,
+                    and any maintenance issues are addressed promptly.&quot;
                   </p>
                   <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold mr-3">
@@ -736,7 +736,7 @@ export default function HomePage() {
               Ready to Find Your Perfect Property?
             </motion.h2>
             <motion.p variants={itemVariants} className="text-lg mb-8 max-w-2xl mx-auto">
-              Whether you're looking to buy, sell, or rent, our team of experts is here to help you every step of the
+              Whether you&apos;re looking to buy, sell, or rent, our team of experts is here to help you every step of the
               way.
             </motion.p>
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center">
