@@ -307,7 +307,7 @@ export default function Dashboard() {
             <Tabs defaultValue="all" className="w-full">
               <div className="flex max-md:flex-col max-md:gap-y-3 justify-between items-center mb-6">
                 <TabsList>
-                  <TabsTrigger value="all">All Blogs</TabsTrigger>
+                  <TabsTrigger value="all">All Properties</TabsTrigger>
                   <TabsTrigger value="recent">Recently Updated</TabsTrigger>
                 </TabsList>
                 <p className="text-sm text-muted-foreground">

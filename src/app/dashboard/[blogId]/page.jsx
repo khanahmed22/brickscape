@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { useState, useRef, useMemo, useEffect } from "react";
-import useSWR from "swr";
-import { useSession, useUser } from "@clerk/nextjs";
-import getSupabaseClient from "@/app/utils/supabase";
-import { useRouter, useParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useCompletion } from "ai/react";
-import parse from "html-react-parser";
-import { slugify } from "@/app/utils/slugify";
+import { useState, useRef, useMemo, useEffect } from "react"
+import useSWR from "swr"
+import { useSession, useUser } from "@clerk/nextjs"
+import getSupabaseClient from "@/app/utils/supabase"
+import { useRouter, useParams } from "next/navigation"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useCompletion } from "ai/react"
+import { slugify } from "@/app/utils/slugify"
 import {
+  HomeIcon as House,
   Type,
   DollarSign,
   Sparkles,
@@ -22,24 +22,26 @@ import {
   Trash,
   ImageUp,
   FileText,
-  Wand2,
   CheckCircle2,
   ArrowLeft,
   Share2,
   Calendar,
-  Loader2,
   Copy,
   Maximize2,
   X,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+  MapPin,
+  Home,
+  Bed,
+  Bath,
+  Car,
+  Heart,
+  Phone,
+  MessageSquare,
+  User,
+  Eye,
+} from "lucide-react"
+import { motion } from "framer-motion"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -49,81 +51,109 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
-import { useSupabaseData } from "@/app/utils/SupabaseContext";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { WhatsappShareButton, WhatsappIcon } from "next-share";
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
+import { useSupabaseData } from "@/app/utils/SupabaseContext"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { WhatsappShareButton, WhatsappIcon } from "next-share"
+import { TwitterShareButton, TwitterIcon } from "next-share"
+import { FacebookShareButton, FacebookIcon } from "next-share"
+import { usePathname } from "next/navigation"
 
-import { TwitterShareButton, TwitterIcon } from "next-share";
+export default function PropertyListingPage() {
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [price, setPrice] = useState("")
+  const [area, setArea] = useState("")
+  const [location, setLocation] = useState("")
+  const [purpose, setPurpose] = useState("")
+  const [blogContent, setBlogContent] = useState("")
+  const [fileURL, setFileURL] = useState("")
+  const [fileURLs, setFileURLs] = useState([])
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [existingFilePath, setExistingFilePath] = useState(null)
+  const [file, setFile] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [slug, setNewSlug] = useState(slugify(name))
+  const [contactName, setContactName] = useState("")
+  const [contactEmail, setContactEmail] = useState("")
+  const [contactMessage, setContactMessage] = useState("")
+  const [isSending, setIsSending] = useState(false)
 
-import { FacebookShareButton, FacebookIcon } from "next-share";
-import { usePathname } from "next/navigation";
+  const router = useRouter()
+  const { blogId: id } = useParams()
+  const { user } = useUser()
+  const { session } = useSession()
+  const editorRef = useRef(null)
 
-export default function BlogPage() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [area, setArea] = useState("");
-  const [location,setLocation] = useState("")
-  const [blogContent, setBlogContent] = useState("");
-  const [fileURL, setFileURL] = useState("");
-  const [fileURLs, setFileURLs] = useState([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [existingFilePath, setExistingFilePath] = useState(null);
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [slug, setNewSlug] = useState(slugify(name));
-  const router = useRouter();
-  const { blogId: id } = useParams();
-  const { user } = useUser();
-  const { session } = useSession();
-  const editorRef = useRef(null);
+  const email = user?.primaryEmailAddress?.emailAddress || ""
+  const authorName = user?.firstName || "Property Owner"
+  const authorAvatar = user?.imageUrl
 
-  const email = user?.primaryEmailAddress?.emailAddress || "";
+  const [actionType, setActionType] = useState(null)
 
-  const [actionType, setActionType] = useState(null);
+  const { countData, setCountData } = useSupabaseData()
+  const [currentCount, setCurrentCount] = useState(countData[0]?.count || 0)
 
-  const { countData, setCountData } = useSupabaseData();
-  const [currentCount, setCurrentCount] = useState(countData[0]?.count || 0);
+  const [prompt, setPrompt] = useState("adorable pig")
+  const [imageSrc, setImageSrc] = useState(null)
+  const [generatingImage, setGeneratingImage] = useState(false)
+  const [imageError, setImageError] = useState(null)
+  const [genre, setGenre] = useState("")
+  const pathname = usePathname()
+  const allowCopy = useRef(false) // Ref to allow copy action
 
-  const [prompt, setPrompt] = useState("adorable pig");
-  const [imageSrc, setImageSrc] = useState(null);
-  const [generatingImage, setGeneratingImage] = useState(false);
-  const [imageError, setImageError] = useState(null);
-  const [genre, setGenre] = useState("");
-  const pathname = usePathname();
-  const allowCopy = useRef(false); // Ref to allow copy action
+  // Mock property features - in a real app, these would come from the database
+  const propertyFeatures = {
+    bedrooms: 3,
+    bathrooms: 2,
+    parking: 1,
+    yearBuilt: 2018,
+    propertyType: genre || "Residential",
+    furnished: "Partially",
+  }
 
   function copyUrl() {
-    allowCopy.current = true; // Allow the copy action
-    const el = document.createElement("input");
-    el.value = window.location.href;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand("copy");
-    document.body.removeChild(el);
-    allowCopy.current = false; // Reset the flag
-    toast.success("Copied To Clipboard");
+    allowCopy.current = true // Allow the copy action
+    const el = document.createElement("input")
+    el.value = window.location.href
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand("copy")
+    document.body.removeChild(el)
+    allowCopy.current = false // Reset the flag
+    toast.success("Listing URL copied to clipboard")
   }
 
   useEffect(() => {
-    setCurrentCount(countData[0]?.count || 0);
-  }, [countData]);
+    setCurrentCount(countData[0]?.count || 0)
+  }, [countData])
+
+  // Handle keyboard navigation for image slider
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isFullscreen) {
+        if (e.key === "ArrowLeft") {
+          navigateImages("prev")
+        } else if (e.key === "ArrowRight") {
+          navigateImages("next")
+        } else if (e.key === "Escape") {
+          setIsFullscreen(false)
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isFullscreen, fileURLs, currentImageIndex])
 
   const {
     complete,
@@ -134,205 +164,172 @@ export default function BlogPage() {
       actionType === "paraphrase"
         ? "/api/rephrase"
         : actionType === "summarize"
-        ? "/api/summarize"
-        : actionType === "spellcheck"
-        ? "/api/spellchecker"
-        : actionType === "generateBlog"
-        ? "/api/generateBlog"
-        : "",
+          ? "/api/summarize"
+          : actionType === "spellcheck"
+            ? "/api/spellchecker"
+            : actionType === "generateBlog"
+              ? "/api/generateBlog"
+              : "",
     body: { text: blogContent },
-  });
+  })
 
   const {
-    data: blog,
+    data: property,
     mutate,
-    isLoading: isBlogLoading,
-    error: blogError,
+    isLoading: isPropertyLoading,
+    error: propertyError,
   } = useSWR(user && id ? ["slug", id] : null, async () => {
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
-    const { data, error } = await client
-      .from("tasks")
-      .select()
-      .eq("slug", id)
-      .single();
-    if (error) throw error;
-    return data;
-  });
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
+    const { data, error } = await client.from("tasks").select().eq("slug", id).single()
+    if (error) throw error
+    return data
+  })
 
   useMemo(() => {
-    if (blog) {
-      setName(blog.name);
-      setDescription(blog.description);
-      setBlogContent(blog.blogContent);
-      setFileURL(blog.fileURL);
+    if (property) {
+      setName(property.name)
+      setDescription(property.description)
+      setBlogContent(property.blogContent)
+      setFileURL(property.fileURL)
       // Handle fileURLs array if it exists, otherwise create an array with the single fileURL
-      setFileURLs(blog.fileURLs || (blog.fileURL ? [blog.fileURL] : []));
-      setGenre(blog.genre || "");
-      setPrice(blog.price);
-      setArea(blog.area);
-      setLocation(blog.location)
+      setFileURLs(property.fileURLs || (property.fileURL ? [property.fileURL] : []))
+      setGenre(property.genre || "")
+      setPrice(property.price)
+      setArea(property.area)
+      setLocation(property.location)
+      setPurpose(property.purpose)
     }
-  }, [blog]);
+  }, [property])
 
-  // Handle keyboard navigation for image slider
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (isFullscreen) {
-        if (e.key === "ArrowLeft") {
-          navigateImages("prev");
-        } else if (e.key === "ArrowRight") {
-          navigateImages("next");
-        } else if (e.key === "Escape") {
-          setIsFullscreen(false);
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFullscreen, fileURLs, currentImageIndex]);
-
-  async function deleteBlog() {
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
+  async function deleteProperty() {
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
 
     try {
       // Delete from both tables
-      await client.from("tasks").delete().eq("slug", id);
-      await client.from("all_tasks").delete().eq("slug", id);
+      await client.from("tasks").delete().eq("slug", id)
+      await client.from("all_tasks").delete().eq("slug", id)
 
-      mutate();
-      toast.success("Blog deleted successfully");
-      router.push("/dashboard");
+      mutate()
+      toast.success("Property listing deleted successfully")
+      router.push("/dashboard")
     } catch (error) {
-      toast.error("Error deleting blog: " + error.message);
+      toast.error("Error deleting property: " + error.message)
     }
   }
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+    setFile(e.target.files[0])
+  }
 
   const handleUpload = async () => {
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
 
     try {
-      setUploading(true);
+      setUploading(true)
 
       if (!file) {
-        toast.info("Please select a file to upload");
-        return;
+        toast.info("Please select a file to upload")
+        return
       }
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const fileExt = file.name.split(".").pop()
+      const fileName = `${Math.random()}.${fileExt}`
+      const filePath = `${fileName}`
 
       if (existingFilePath) {
-        const { error: deleteError } = await client.storage
-          .from("images")
-          .remove([existingFilePath]);
+        const { error: deleteError } = await client.storage.from("images").remove([existingFilePath])
         if (deleteError) {
-          throw deleteError;
+          throw deleteError
         }
       }
 
-      const { data, error } = await client.storage
-        .from("images")
-        .upload(filePath, file);
+      const { data, error } = await client.storage.from("images").upload(filePath, file)
       if (error) {
-        throw error;
+        throw error
       }
 
-      const { data: publicUrlData, error: urlError } = client.storage
-        .from("images")
-        .getPublicUrl(filePath);
+      const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(filePath)
       if (urlError) {
-        throw urlError;
+        throw urlError
       }
 
-      const newFileURL = publicUrlData.publicUrl;
-      setFileURL(newFileURL);
-      setFileURLs([...fileURLs, newFileURL]);
-      setExistingFilePath(filePath);
+      const newFileURL = publicUrlData.publicUrl
+      setFileURL(newFileURL)
+      setFileURLs([...fileURLs, newFileURL])
+      setExistingFilePath(filePath)
 
-      toast.success("File uploaded successfully");
+      toast.success("File uploaded successfully")
     } catch (error) {
-      toast.error("Error uploading file: " + error.message);
+      toast.error("Error uploading file: " + error.message)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const handleUploadGeneratedImage = async () => {
     if (!imageSrc) {
-      toast.info("Please generate an image first");
-      return;
+      toast.info("Please generate an image first")
+      return
     }
 
     try {
-      setUploading(true);
+      setUploading(true)
 
       // Fetch the image as a blob
-      const response = await fetch(imageSrc);
-      const blob = await response.blob();
+      const response = await fetch(imageSrc)
+      const blob = await response.blob()
 
       // Create a file from the blob
-      const fileName = `ai-generated-${Math.random()}.png`;
-      const aiGeneratedFile = new File([blob], fileName, { type: "image/png" });
+      const fileName = `ai-generated-${Math.random()}.png`
+      const aiGeneratedFile = new File([blob], fileName, { type: "image/png" })
 
       // Get Supabase client
-      const clerkToken = await session?.getToken({ template: "supabase" });
-      const client = getSupabaseClient(clerkToken);
+      const clerkToken = await session?.getToken({ template: "supabase" })
+      const client = getSupabaseClient(clerkToken)
 
       // Delete existing file if there is one
       if (existingFilePath) {
-        const { error: deleteError } = await client.storage
-          .from("images")
-          .remove([existingFilePath]);
+        const { error: deleteError } = await client.storage.from("images").remove([existingFilePath])
         if (deleteError) {
-          console.error("Error deleting existing file:", deleteError);
+          console.error("Error deleting existing file:", deleteError)
         }
       }
 
       // Upload to Supabase
-      const { data, error } = await client.storage
-        .from("images")
-        .upload(fileName, aiGeneratedFile);
+      const { data, error } = await client.storage.from("images").upload(fileName, aiGeneratedFile)
 
       if (error) {
-        throw error;
+        throw error
       }
 
       // Get public URL
-      const { data: publicUrlData, error: urlError } = client.storage
-        .from("images")
-        .getPublicUrl(fileName);
+      const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(fileName)
 
       if (urlError) {
-        throw urlError;
+        throw urlError
       }
 
       // Update the fileURL state and set the existing file path
-      const newFileURL = publicUrlData.publicUrl;
-      setFileURL(newFileURL);
-      setFileURLs([...fileURLs, newFileURL]);
-      setExistingFilePath(fileName);
+      const newFileURL = publicUrlData.publicUrl
+      setFileURL(newFileURL)
+      setFileURLs([...fileURLs, newFileURL])
+      setExistingFilePath(fileName)
 
-      toast.success("AI-generated image uploaded successfully");
+      toast.success("AI-generated image uploaded successfully")
     } catch (error) {
-      toast.error("Error uploading AI-generated image: " + error.message);
+      toast.error("Error uploading AI-generated image: " + error.message)
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
-  const createOrUpdateBlog = async (e) => {
-    e.preventDefault();
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
+  const createOrUpdateProperty = async (e) => {
+    e.preventDefault()
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
 
     try {
       if (id) {
@@ -345,13 +342,14 @@ export default function BlogPage() {
             price,
             area,
             location,
+            purpose,
             blogContent,
             fileURL,
             fileURLs,
             slug: slug,
             genre,
           })
-          .eq("slug", id);
+          .eq("slug", id)
 
         // Also update the all_tasks table with the same data
         await client
@@ -362,198 +360,201 @@ export default function BlogPage() {
             price,
             area,
             location,
+            purpose,
             blogContent,
             fileURL,
             fileURLs,
             slug: slug,
             genre,
           })
-          .eq("slug", id);
+          .eq("slug", id)
       } else {
-        // For new blog posts, insert into both tables
-        const blogData = {
+        // For new property listings, insert into both tables
+        const propertyData = {
           name,
           email,
           description,
           location,
           price,
           area,
+          purpose,
           blogContent,
           fileURL,
           fileURLs,
           slug: slug,
           genre,
-        };
+        }
 
-        await client.from("tasks").insert(blogData);
-        await client.from("all_tasks").insert(blogData);
+        await client.from("tasks").insert(propertyData)
+        await client.from("all_tasks").insert(propertyData)
       }
-      mutate();
-      setFile(null);
-      toast.success("Blog saved successfully");
-      setEditMode(false);
+      mutate()
+      setFile(null)
+      toast.success("Property listing saved successfully")
+      setEditMode(false)
 
-      // If this is a new blog or the slug changed, redirect to the new URL
+      // If this is a new property or the slug changed, redirect to the new URL
       if (!id || id !== slug) {
-        router.push(`/blog/${slug}`);
+        router.push(`/blog/${slug}`)
       }
 
-      router.push("/dashboard");
+      router.push("/dashboard")
     } catch (error) {
-      toast.error("Error saving blog: " + error.message);
+      toast.error("Error saving property: " + error.message)
     }
-  };
+  }
 
   const updateCountInSupabase = async (newCount) => {
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
 
-    const { error } = await client
-      .from("ai-table")
-      .update({ count: newCount })
-      .eq("user_id", user.id);
+    const { error } = await client.from("ai-table").update({ count: newCount }).eq("user_id", user.id)
 
     if (error) {
-      console.error("Error updating count in Supabase:", error);
-      toast.error("Failed to update AI usage count");
-      return false;
+      console.error("Error updating count in Supabase:", error)
+      toast.error("Failed to update AI usage count")
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const handleAiAction = async (type) => {
     if (!blogContent) {
-      toast.error("Text field is empty. Write something first.");
-      return;
+      toast.error("Text field is empty. Write something first.")
+      return
     }
 
     if (currentCount <= 0) {
-      toast.error("You've used all your AI actions. Please upgrade your plan.");
-      return;
+      toast.error("You've used all your AI actions. Please upgrade your plan.")
+      return
     }
 
-    setLoading(true);
-    setActionType(type);
+    setLoading(true)
+    setActionType(type)
 
     try {
-      const newCount = currentCount - 1;
-      const updated = await updateCountInSupabase(newCount);
+      const newCount = currentCount - 1
+      const updated = await updateCountInSupabase(newCount)
 
       if (updated) {
-        setCurrentCount(newCount);
-        setCountData([{ ...countData[0], count: newCount }]);
-        await complete(blogContent);
+        setCurrentCount(newCount)
+        setCountData([{ ...countData[0], count: newCount }])
+        await complete(blogContent)
       }
     } catch (error) {
-      toast.error("Error processing AI action: " + error.message);
+      toast.error("Error processing AI action: " + error.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (completion) {
-      setBlogContent(completion);
-      let successMessage = "";
+      setBlogContent(completion)
+      let successMessage = ""
       if (actionType === "paraphrase") {
-        successMessage = "Blog content rephrased successfully";
+        successMessage = "Content rephrased successfully"
       } else if (actionType === "summarize") {
-        successMessage = "Blog content summarized successfully";
+        successMessage = "Content summarized successfully"
       } else if (actionType === "spellcheck") {
-        successMessage = "Spelling checked and corrected successfully";
+        successMessage = "Spelling checked and corrected successfully"
       } else if (actionType === "generateBlog") {
-        successMessage = "Blog generated successfully";
+        successMessage = "Content generated successfully"
       }
-      toast.success(successMessage);
+      toast.success(successMessage)
     }
-  }, [completion, actionType]);
-
-  const config = useMemo(
-    () => ({
-      placeholder: "Start writing your blog content here...",
-      width: "100%",
-      height: "400px",
-      uploader: {
-        insertImageAsBase64URI: true,
-        url: "https://freeimage.host/api/1/upload",
-        filesVariableName: (i) => `source[${i}]`,
-        headers: {
-          Authorization: `Client-ID ${process.env.NEXT_PUBLIC_FREE_IMAGE_HOST_KEY}`,
-        },
-        format: "json",
-        isSuccess: (resp) => !resp.error,
-        process: (resp) => ({
-          files: resp.image ? [resp.image.url] : [],
-          path: resp.image ? resp.image.url : "",
-          error: resp.error,
-        }),
-      },
-    }),
-    []
-  );
+  }, [completion, actionType])
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Unknown date";
-    const date = new Date(dateString);
+    if (!dateString) return "Unknown date"
+    const date = new Date(dateString)
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
-    }).format(date);
-  };
+    }).format(date)
+  }
+
+  const formatPrice = (price) => {
+    if (!price) return "Price on request"
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(price)
+  }
+
+  const formatArea = (area) => {
+    if (!area) return "Area not specified"
+    return `${area} sq ft`
+  }
 
   useEffect(() => {
-    setNewSlug(slugify(name));
-  }, [name]);
+    setNewSlug(slugify(name))
+  }, [name])
 
   const fetchImage = async () => {
-    setGeneratingImage(true);
-    setImageError(null);
+    setGeneratingImage(true)
+    setImageError(null)
 
     try {
       const response = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error(`Server Error: ${response.status}`);
+        throw new Error(`Server Error: ${response.status}`)
       }
 
-      const { image } = await response.json();
-      setImageSrc(image);
+      const { image } = await response.json()
+      setImageSrc(image)
     } catch (err) {
-      setImageError(err.message);
+      setImageError(err.message)
     } finally {
-      setGeneratingImage(false);
+      setGeneratingImage(false)
     }
-  };
+  }
 
   // Image slider navigation
   const navigateImages = (direction) => {
-    if (!fileURLs || fileURLs.length <= 1) return;
+    if (!fileURLs || fileURLs.length <= 1) return
 
-    let newIndex;
+    let newIndex
     if (direction === "next") {
-      newIndex = (currentImageIndex + 1) % fileURLs.length;
+      newIndex = (currentImageIndex + 1) % fileURLs.length
     } else {
-      newIndex = (currentImageIndex - 1 + fileURLs.length) % fileURLs.length;
+      newIndex = (currentImageIndex - 1 + fileURLs.length) % fileURLs.length
     }
 
-    setCurrentImageIndex(newIndex);
-  };
+    setCurrentImageIndex(newIndex)
+  }
 
   // Toggle fullscreen mode
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
+    setIsFullscreen(!isFullscreen)
+  }
 
-  // Loading skeleton for the blog view
-  if (isBlogLoading && !editMode) {
+  const handleContactSubmit = (e) => {
+    e.preventDefault()
+    setIsSending(true)
+
+    // Simulate sending a message
+    setTimeout(() => {
+      toast.success("Your message has been sent to the seller")
+      setContactName("")
+      setContactEmail("")
+      setContactMessage("")
+      setIsSending(false)
+    }, 1500)
+  }
+
+  // Loading skeleton for the property view
+  if (isPropertyLoading && !editMode) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="mb-6">
             <Skeleton className="h-10 w-32 mb-4" />
 
@@ -604,27 +605,23 @@ export default function BlogPage() {
           </Card>
         </div>
       </div>
-    );
+    )
   }
 
   // Error state
-  if (blogError) {
+  if (propertyError) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-xl text-destructive">
-              Error Loading Blog
-            </CardTitle>
+            <CardTitle className="text-xl text-destructive">Error Loading Property</CardTitle>
             <CardDescription>
-              We couldn&apos;t load the blog post you requested. It may have
-              been deleted or you may not have permission to view it.
+              We couldn&apos;t load the property you requested. It may have been deleted or you may not have permission
+              to view it.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">
-              Error details: {blogError.message || "Unknown error"}
-            </p>
+            <p className="text-sm text-muted-foreground">Error details: {propertyError.message || "Unknown error"}</p>
             <Button onClick={() => router.push("/dashboard")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Return to Dashboard
@@ -632,209 +629,371 @@ export default function BlogPage() {
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   if (!editMode) {
     // View Mode
     return (
-      <div className="min-h-screen bg-background px-2">
-        <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-background">
+        <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="mb-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mb-4"
-              onClick={() => router.push("/dashboard")}
-            >
+            <Button variant="ghost" size="sm" className="mb-4" onClick={() => router.push("/dashboard")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
 
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight md:text-4xl mb-2">
-                  {name}
-                </h1>
-               
-                <p className="text-muted-foreground text-lg">{price}</p>
-                <p className="text-muted-foreground text-lg">{location}</p>
-
-                {blog?.genre && (
-                  <Badge variant="secondary" className="mt-2">
-                    {blog.genre}
-                  </Badge>
-                )}
-
-                <div className="flex items-center mt-4 text-sm text-muted-foreground">
-                  {blog?.created_at && (
-                    <div className="flex items-center mr-4">
-                      <Calendar className="mr-1 h-4 w-4" />
-                      <span>{formatDate(blog.created_at)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setEditMode(true)}
-                  aria-label="Edit blog"
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit
-                </Button>
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      aria-label="Delete blog"
-                    >
-                      <Trash className="mr-2 h-4 w-4" />
-                      Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your blog post.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <Button variant="destructive" onClick={deleteBlog}>
-                        Delete
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+            <div className="mb-2 flex items-center justify-center gap-x-2 text-lg font-bold bg-primary p-3 text-white rounded-lg">
+              How buyers see your profile <Eye/>
             </div>
-          </div>
 
-          {fileURLs && fileURLs.length > 0 && (
-            <div className="mb-8 rounded-lg overflow-hidden">
-              {/* Image Slider */}
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border bg-muted">
-                {/* Navigation Arrows - Only show if there are multiple images */}
-                {fileURLs.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => navigateImages("prev")}
-                      className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="h-6 w-6" />
-                    </button>
-                    <button
-                      onClick={() => navigateImages("next")}
-                      className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="h-6 w-6" />
-                    </button>
-                  </>
-                )}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Main content - 2/3 width on desktop */}
+              <div className="lg:col-span-2">
+                {/* Property Title and Badge */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                  <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{name}</h1>
+                  <Badge variant="outline" className="mt-2 md:mt-0 px-3 py-1.5 text-sm">
+                    {purpose || "For Sale"}
+                  </Badge>
+                </div>
 
-                {/* Fullscreen Button */}
-                <button
-                  onClick={toggleFullscreen}
-                  className="absolute top-2 right-2 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none"
-                  aria-label="Toggle fullscreen"
-                >
-                  <Maximize2 className="h-4 w-4" />
-                </button>
+                {/* Location */}
+                <div className="flex items-center text-muted-foreground mb-6">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span>{location || "Location not specified"}</span>
+                </div>
 
-                {/* Current Image */}
-                <img
-                  className="w-full h-[400px] object-cover"
-                  src={fileURLs[currentImageIndex] || "/placeholder.svg"}
-                  alt={name || "Blog cover"}
-                />
+                {/* Image Slider */}
+                {fileURLs && fileURLs.length > 0 && (
+                  <div className="mb-8 rounded-lg overflow-hidden">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border bg-muted">
+                      {/* Navigation Arrows - Only show if there are multiple images */}
+                      {fileURLs.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => navigateImages("prev")}
+                            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft className="h-6 w-6" />
+                          </button>
+                          <button
+                            onClick={() => navigateImages("next")}
+                            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight className="h-6 w-6" />
+                          </button>
+                        </>
+                      )}
 
-                {/* Image Counter - Only show if there are multiple images */}
-                {fileURLs.length > 1 && (
-                  <div className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
-                    {currentImageIndex + 1} / {fileURLs.length}
+                      {/* Fullscreen Button */}
+                      <button
+                        onClick={toggleFullscreen}
+                        className="absolute top-2 right-2 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 focus:outline-none"
+                        aria-label="Toggle fullscreen"
+                      >
+                        <Maximize2 className="h-4 w-4" />
+                      </button>
+
+                      {/* Current Image */}
+                      <img
+                        className="w-full h-full object-cover"
+                        src={fileURLs[currentImageIndex] || "/placeholder.svg"}
+                        alt={name || "Property image"}
+                      />
+
+                      {/* Image Counter - Only show if there are multiple images */}
+                      {fileURLs.length > 1 && (
+                        <div className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
+                          {currentImageIndex + 1} / {fileURLs.length}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Thumbnails - Only show if there are multiple images */}
+                    {fileURLs.length > 1 && (
+                      <div className="grid grid-cols-6 gap-2 mt-2">
+                        {fileURLs.map((url, index) => (
+                          <div
+                            key={index}
+                            className={`relative aspect-square cursor-pointer rounded-md overflow-hidden border transition-all ${
+                              index === currentImageIndex ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-90"
+                            }`}
+                            onClick={() => setCurrentImageIndex(index)}
+                          >
+                            <img
+                              src={url || "/placeholder.svg"}
+                              alt={`Thumbnail ${index + 1}`}
+                              className="h-full w-full object-cover object-center"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
 
-              {/* Thumbnails - Only show if there are multiple images */}
-              {fileURLs.length > 1 && (
-                <div className="grid grid-cols-6 gap-2 mt-2">
-                  {fileURLs.map((url, index) => (
-                    <div
-                      key={index}
-                      className={`relative aspect-square cursor-pointer rounded-md overflow-hidden border transition-all ${
-                        index === currentImageIndex
-                          ? "ring-2 ring-primary ring-offset-1"
-                          : "hover:opacity-90"
-                      }`}
-                      onClick={() => setCurrentImageIndex(index)}
-                    >
-                      <img
-                        src={url || "/placeholder.svg"}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="h-full w-full object-cover object-center"
-                      />
+                {/* Property Features */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                  <div className="flex items-center p-3 border rounded-md">
+                    <Bed className="h-5 w-5 mr-2 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Bedrooms</p>
+                      <p className="font-medium">{propertyFeatures.bedrooms || "N/A"}</p>
                     </div>
-                  ))}
+                  </div>
+                  <div className="flex items-center p-3 border rounded-md">
+                    <Bath className="h-5 w-5 mr-2 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Bathrooms</p>
+                      <p className="font-medium">{propertyFeatures.bathrooms || "N/A"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-3 border rounded-md">
+                    <Car className="h-5 w-5 mr-2 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Parking</p>
+                      <p className="font-medium">{propertyFeatures.parking || "N/A"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-3 border rounded-md">
+                    <SquareDashedBottom className="h-5 w-5 mr-2 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Area</p>
+                      <p className="font-medium">{formatArea(area)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-3 border rounded-md">
+                    <Home className="h-5 w-5 mr-2 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Property Type</p>
+                      <p className="font-medium">{genre || "Not specified"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-3 border rounded-md">
+                    <Calendar className="h-5 w-5 mr-2 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Listed</p>
+                      <p className="font-medium">{property?.created_at ? formatDate(property.created_at) : "N/A"}</p>
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          )}
 
-          <div className="prose prose-lg max-w-none dark:prose-invert mb-12">
-            {description}
-          </div>
+                {/* Description */}
+                <Card className="mb-8">
+                  <CardHeader>
+                    <CardTitle className="text-xl">Property Description</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      {description || "No description available."}
+                    </div>
+                  </CardContent>
+                </Card>
 
-          <Separator className="my-8" />
+                {/* Admin Actions */}
+                <div className="flex items-center gap-2 mb-8">
+                  <Button variant="outline" size="sm" onClick={() => setEditMode(true)} aria-label="Edit property">
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Property
+                  </Button>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <Share2 className="mr-2 h-5 w-5" />
-                Share this article with yourself
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center gap-4">
-                <FacebookShareButton
-                  url={`https://inkwise-ai.vercel.app/${pathname}`}
-                  hashtag={"#happyblogging"}
-                >
-                  <FacebookIcon size={32} round />
-                </FacebookShareButton>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm" aria-label="Delete property">
+                        <Trash className="mr-2 h-4 w-4" />
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete your property listing.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button variant="destructive" onClick={deleteProperty}>
+                          Delete
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
 
-                <TwitterShareButton
-                  url={`https://inkwise-ai.vercel.app/${pathname}`}
-                  title={
-                    "next-share is a social share buttons for your next React apps."
-                  }
-                >
-                  <TwitterIcon size={32} round />
-                </TwitterShareButton>
-                <WhatsappShareButton
-                  url={`https://inkwise-ai.vercel.app/${pathname}`}
-                  title={
-                    "next-share is a social share buttons for your next React apps."
-                  }
-                  separator=":: "
-                >
-                  <WhatsappIcon size={32} round />
-                </WhatsappShareButton>
+                {/* Share Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center">
+                      <Share2 className="mr-2 h-5 w-5" />
+                      Share this property
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-center gap-4">
+                      <FacebookShareButton url={`https://property-listings.com${pathname}`} hashtag={"#realestate"}>
+                        <FacebookIcon size={32} round />
+                      </FacebookShareButton>
 
-                <Copy className="cursor-pointer " onClick={copyUrl} />
+                      <TwitterShareButton
+                        url={`https://property-listings.com${pathname}`}
+                        title={`Check out this property: ${name}`}
+                      >
+                        <TwitterIcon size={32} round />
+                      </TwitterShareButton>
+                      <WhatsappShareButton
+                        url={`https://property-listings.com${pathname}`}
+                        title={`Check out this property: ${name}`}
+                        separator=" - "
+                      >
+                        <WhatsappIcon size={32} round />
+                      </WhatsappShareButton>
+
+                      <button
+                        onClick={copyUrl}
+                        className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        aria-label="Copy link"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
+
+              {/* Sidebar - 1/3 width on desktop */}
+              <div className="lg:col-span-1">
+                {/* Price Card */}
+                <Card className="mb-6">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Price</p>
+                        <p className="text-3xl font-bold">{formatPrice(price)}</p>
+                      </div>
+                      <Button variant="outline" size="icon" className="rounded-full">
+                        <Heart className="h-5 w-5" />
+                      </Button>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Price per sq ft</span>
+                        <span className="font-medium">
+                          {price && area ? formatPrice(price / area) : "Not available"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Purpose</span>
+                        <span className="font-medium">{purpose || "Not specified"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Listed on</span>
+                        <span className="font-medium">
+                          {property?.created_at ? formatDate(property.created_at) : "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Seller Card */}
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Listed by</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
+                        <img
+                          src={authorAvatar || "/placeholder.svg?height=48&width=48"}
+                          alt="Seller"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-medium">{authorName}</p>
+                        <p className="text-sm text-muted-foreground">Property Owner</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <Button variant="outline" className="w-full justify-start">
+                        <Phone className="mr-2 h-4 w-4" />
+                        Contact Seller
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start">
+                        <User className="mr-2 h-4 w-4" />
+                        View Profile
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Contact Form */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Send a Message</CardTitle>
+                    <CardDescription>Interested in this property? Send a message to the seller.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleContactSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <label htmlFor="name" className="text-sm font-medium">
+                          Your Name
+                        </label>
+                        <Input
+                          id="name"
+                          value={contactName}
+                          onChange={(e) => setContactName(e.target.value)}
+                          placeholder="Enter your name"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="email" className="text-sm font-medium">
+                          Your Email
+                        </label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={contactEmail}
+                          onChange={(e) => setContactEmail(e.target.value)}
+                          placeholder="Enter your email"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="message" className="text-sm font-medium">
+                          Message
+                        </label>
+                        <Textarea
+                          id="message"
+                          value={contactMessage}
+                          onChange={(e) => setContactMessage(e.target.value)}
+                          placeholder="I'm interested in this property..."
+                          rows={4}
+                          required
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={isSending}>
+                        {isSending ? (
+                          <>Sending...</>
+                        ) : (
+                          <>
+                            <MessageSquare className="mr-2 h-4 w-4" />
+                            Send Message
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Fullscreen Image Viewer */}
@@ -882,10 +1041,10 @@ export default function BlogPage() {
           </div>
         )}
       </div>
-    );
+    )
   } else {
     // Edit Mode - Loading skeleton for edit mode
-    if (isBlogLoading) {
+    if (isPropertyLoading) {
       return (
         <motion.div
           initial={{ opacity: 0 }}
@@ -958,7 +1117,7 @@ export default function BlogPage() {
             </div>
           </div>
         </motion.div>
-      );
+      )
     }
 
     // Edit Mode
@@ -975,22 +1134,16 @@ export default function BlogPage() {
             <div className="max-w-5xl mx-auto">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight">
-                    Edit Property
-                  </h1>
-                  <p className="text-muted-foreground mt-1">
-                    Make changes to your property listing
-                  </p>
+                  <h1 className="text-3xl font-bold tracking-tight">Edit Property</h1>
+                  <p className="text-muted-foreground mt-1">Make changes to your property listing</p>
                 </div>
                 <Badge variant="outline" className="px-3 py-1.5">
                   <Sparkles className="w-4 h-4 mr-1.5 text-primary" />
-                  <span className="font-medium">
-                    {currentCount} AI actions remaining
-                  </span>
+                  <span className="font-medium">{currentCount} AI actions remaining</span>
                 </Badge>
               </div>
 
-              <form onSubmit={createOrUpdateBlog}>
+              <form onSubmit={createOrUpdateProperty}>
                 <Tabs defaultValue="content" className="w-full">
                   <TabsList className="grid grid-cols-2 mb-6">
                     <TabsTrigger value="content">
@@ -1010,12 +1163,24 @@ export default function BlogPage() {
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
-                          <label
-                            htmlFor="title"
-                            className="text-sm font-medium"
-                          >
+                          <label htmlFor="purpose" className="text-sm font-medium">
+                            <House className="w-4 h-4 inline mr-2" />
+                            Select Purpose
+                          </label>
+                          <Select value={purpose} onValueChange={setPurpose}>
+                            <SelectTrigger id="purpose" className="h-12">
+                              <SelectValue placeholder="Select your Purpose" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                              <SelectItem value="Rent">Rent</SelectItem>
+                              <SelectItem value="Sell">Sell</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <label htmlFor="title" className="text-sm font-medium">
                             <Type className="w-4 h-4 inline mr-2" />
-
                             Property Title
                           </label>
                           <Input
@@ -1030,99 +1195,92 @@ export default function BlogPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <label
-                            htmlFor="description"
-                            className="text-sm font-medium"
-                          > <FileText className="w-4 h-4 inline mr-2" />
+                          <label htmlFor="description" className="text-sm font-medium">
+                            <FileText className="w-4 h-4 inline mr-2" />
                             Description
                           </label>
                           <Textarea
                             id="description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Add a brief description or subtitle"
-                            className="min-h-[80px] resize-none"
+                            placeholder="Add a detailed description of the property"
+                            className="min-h-[120px] resize-none"
                             required
                           />
                         </div>
+
                         <div className="space-y-2">
-                          <label
-                            htmlFor="genre"
-                            className="text-sm font-medium"
-                          >
-                            <FileText className="w-4 h-4 inline mr-2" />
+                          <label htmlFor="location" className="text-sm font-medium">
+                            <MapPin className="w-4 h-4 inline mr-2" />
+                            Location
+                          </label>
+                          <Input
+                            id="location"
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="Enter property location"
+                            className="h-12"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label htmlFor="genre" className="text-sm font-medium">
+                            <Home className="w-4 h-4 inline mr-2" />
                             Property Type
                           </label>
                           <Select value={genre} onValueChange={setGenre}>
                             <SelectTrigger id="genre" className="h-12">
-                              <SelectValue placeholder="Select a genre" />
+                              <SelectValue placeholder="Select property type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="uncategorized">
-                                Uncategorized
-                              </SelectItem>
-                              <SelectItem value="Technology">
-                                Technology
-                              </SelectItem>
-                              <SelectItem value="Travel">Travel</SelectItem>
-                              <SelectItem value="Food">Food</SelectItem>
-                              <SelectItem value="Lifestyle">
-                                Lifestyle
-                              </SelectItem>
-                              <SelectItem value="Health">Health</SelectItem>
-                              <SelectItem value="Fitness">Fitness</SelectItem>
-                              <SelectItem value="Business">Business</SelectItem>
-                              <SelectItem value="Finance">Finance</SelectItem>
-                              <SelectItem value="Education">
-                                Education
-                              </SelectItem>
-                              <SelectItem value="Entertainment">
-                                Entertainment
-                              </SelectItem>
-                              <SelectItem value="Science">Science</SelectItem>
-                              <SelectItem value="Art">Art</SelectItem>
-                              <SelectItem value="Fashion">Fashion</SelectItem>
-                              <SelectItem value="Sports">Sports</SelectItem>
-                              <SelectItem value="Politics">Politics</SelectItem>
+                              <SelectItem value="House">House</SelectItem>
+                              <SelectItem value="Apartment">Apartment</SelectItem>
+                              <SelectItem value="Condo">Condo</SelectItem>
+                              <SelectItem value="Townhouse">Townhouse</SelectItem>
+                              <SelectItem value="Villa">Villa</SelectItem>
+                              <SelectItem value="Land">Land</SelectItem>
+                              <SelectItem value="Commercial">Commercial</SelectItem>
                               <SelectItem value="Other">Other</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="price"
-                            className="text-sm font-medium"
-                          >
-                            <DollarSign className="w-4 h-4 inline mr-2" />
-                            Price
-                          </label>
-                          <Input
-                            id="price"
-                            type="number"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            placeholder="Enter Price"
-                            className="h-12"
-                            required
-                          />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label htmlFor="price" className="text-sm font-medium">
+                              <DollarSign className="w-4 h-4 inline mr-2" />
+                              Price
+                            </label>
+                            <Input
+                              id="price"
+                              type="number"
+                              value={price}
+                              onChange={(e) => setPrice(e.target.value)}
+                              placeholder="Enter Price"
+                              className="h-12"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label htmlFor="area" className="text-sm font-medium">
+                              <SquareDashedBottom className="w-4 h-4 inline mr-2" />
+                              Area (sq ft)
+                            </label>
+                            <Input
+                              id="area"
+                              type="number"
+                              placeholder="Enter Area in Sq. ft"
+                              onChange={(e) => setArea(e.target.value)}
+                              value={area}
+                              required
+                              className="h-12"
+                              aria-label="Area"
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <label htmlFor="area" className="text-sm font-medium">
-                            <SquareDashedBottom className="w-4 h-4 inline mr-2" />
-                            Area
-                          </label>
-                          <Input
-                            id="area"
-                            autoFocus
-                            type="number"
-                            placeholder="Enter Area in Sq. ft"
-                            onChange={(e) => setArea(e.target.value)}
-                            value={area}
-                            required
-                            className="h-12"
-                            aria-label="Area"
-                          />
-                        </div>
+
+                        
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -1130,26 +1288,16 @@ export default function BlogPage() {
                   <TabsContent value="media">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-xl">
-                          Featured Image
-                        </CardTitle>
-                        <CardDescription>
-                          Upload a high-quality image to represent your blog
-                          post
-                        </CardDescription>
+                        <CardTitle className="text-xl">Property Images</CardTitle>
+                        <CardDescription>Upload high-quality images of your property</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-6">
                           <div className="space-y-4">
-                            <h3 className="text-sm font-medium">
-                              Upload Your Own Image
-                            </h3>
+                            <h3 className="text-sm font-medium">Upload Your Own Image</h3>
                             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                               <div className="flex-1">
-                                <label
-                                  htmlFor="image-upload"
-                                  className="text-sm font-medium block mb-2"
-                                >
+                                <label htmlFor="image-upload" className="text-sm font-medium block mb-2">
                                   Upload Image (Max: 50MB)
                                 </label>
                                 <Input
@@ -1181,17 +1329,13 @@ export default function BlogPage() {
 
                           {fileURLs && fileURLs.length > 0 && (
                             <div className="mt-8 border-t pt-6">
-                              <h3 className="text-sm font-medium mb-4">
-                                Uploaded Images
-                              </h3>
+                              <h3 className="text-sm font-medium mb-4">Uploaded Images</h3>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {fileURLs.map((url, index) => (
                                   <div
                                     key={index}
                                     className={`relative rounded-md overflow-hidden border cursor-pointer transition-all ${
-                                      url === fileURL
-                                        ? "ring-2 ring-primary ring-offset-2"
-                                        : "hover:opacity-90"
+                                      url === fileURL ? "ring-2 ring-primary ring-offset-2" : "hover:opacity-90"
                                     }`}
                                     onClick={() => setFileURL(url)}
                                   >
@@ -1202,10 +1346,7 @@ export default function BlogPage() {
                                     />
                                     {url === fileURL && (
                                       <div className="absolute top-2 right-2">
-                                        <Badge
-                                          variant="secondary"
-                                          className="bg-background/80 backdrop-blur-sm"
-                                        >
+                                        <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
                                           <CheckCircle2 className="w-3 h-3 mr-1 text-primary" />
                                           Cover Image
                                         </Badge>
@@ -1223,19 +1364,12 @@ export default function BlogPage() {
                 </Tabs>
 
                 <div className="flex items-center justify-between mt-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setEditMode(false)}
-                  >
+                  <Button type="button" variant="outline" onClick={() => setEditMode(false)}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Cancel
                   </Button>
 
-                  <Button
-                    type="submit"
-                    disabled={!name || !description || !price}
-                  >
+                  <Button type="submit" disabled={!name || !description || !price || !purpose}>
                     <Save className="mr-2 h-4 w-4" />
                     Save Changes
                   </Button>
@@ -1245,6 +1379,6 @@ export default function BlogPage() {
           </div>
         </div>
       </motion.div>
-    );
+    )
   }
 }

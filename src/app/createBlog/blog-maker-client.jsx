@@ -20,12 +20,17 @@ import {
   FileImage,
   Send,
   SquareDashedBottom,
+  MapPin,
+  LandPlot,
+  House
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { slugify } from "@/app/utils/slugify"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
 
 // Dynamically import JoditEditor with SSR disabled
 const JoditEditor = dynamic(() => import("jodit-react"), {
@@ -43,13 +48,14 @@ export default function BlogMakerClient() {
   const [price, setPrice] = useState("")
   const [area, setArea] = useState("")
   const [location,setLocation] = useState("")
+  const [purpose,setPurpose] = useState("")
   const [blogContent, setBlogContent] = useState("")
   const [editingTaskId, setEditingTaskId] = useState(null)
   const [slug, setSlug] = useState("")
   const [genre, setGenre] = useState("")
   const { user } = useUser()
   const { session } = useSession()
-  const editorRef = useRef(null)
+  
   const router = useRouter()
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
@@ -176,6 +182,7 @@ export default function BlogMakerClient() {
             description,
             price,
             area,
+            purpose,
             blogContent,
             location,
             fileURL: coverImageURL,
@@ -188,7 +195,7 @@ export default function BlogMakerClient() {
         setTasks(
           tasks.map((task) =>
             task.id === editingTaskId
-              ? { ...task, name, description, price, area,location, blogContent, fileURL: coverImageURL, fileURLs, slug, genre }
+              ? { ...task, name, description, price, area,location, purpose,blogContent, fileURL: coverImageURL, fileURLs, slug, genre }
               : task,
           ),
         )
@@ -201,6 +208,7 @@ export default function BlogMakerClient() {
           authorName,
           authorAvatar,
           description,
+          purpose,
           price,
           area,
           location,
@@ -235,6 +243,7 @@ export default function BlogMakerClient() {
       setPrice("")
       setArea("")
       setLocation("")
+      setPurpose("")
 
       toast.success("Blog published successfully")
       router.push("/dashboard")
@@ -449,7 +458,6 @@ export default function BlogMakerClient() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/*<SideBar />*/}
       <div className="flex-1 p-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
@@ -457,29 +465,18 @@ export default function BlogMakerClient() {
               <h1 className="text-3xl font-bold">Ad Maker</h1>
               <p className="text-muted-foreground mt-1">Create your Property</p>
             </div>
-            <Badge variant="outline" className="px-3 py-1.5">
-              <Sparkles className="w-4 h-4 mr-1.5 text-primary" />
-              <span className="font-medium">
-                {currentCount} AI actions remaining{" "}
-                <span
-                  className="font-semibold text-red-500 hover:underline hover:text-red-600 hover:font-bold ml-2 cursor-pointer"
-                  onClick={() => router.push("/pricing")}
-                >
-                  Upgrade
-                </span>
-              </span>
-            </Badge>
+            
           </div>
 
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="grid grid-cols-2 mb-6">
               <TabsTrigger value="content">
                 <FileText className="w-4 h-4 mr-2" />
-                Content
+                Details
               </TabsTrigger>
               <TabsTrigger value="media">
                 <FileImage className="w-4 h-4 mr-2" />
-                Featured Image
+                Property Image
               </TabsTrigger>
             </TabsList>
 
@@ -489,6 +486,26 @@ export default function BlogMakerClient() {
                   <CardTitle className="text-xl">Property Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <label htmlFor="purpose" className="text-sm font-medium">
+                      <House className="w-4 h-4 inline mr-2" />
+                      Select Purpose
+                    </label>
+                    <Select value={purpose} onValueChange={setPurpose}>
+                      <SelectTrigger id="purpose" className="h-12">
+                        <SelectValue placeholder="Select your Purpose" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="uncategorized">
+                          Uncategorized
+                        </SelectItem>
+                        <SelectItem value="Rent">Rent</SelectItem>
+                        <SelectItem value="Sell">Sell</SelectItem>
+                        
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="space-y-2">
                     <label htmlFor="title" className="text-sm font-medium">
                       <Type className="w-4 h-4 inline mr-2" />
@@ -508,7 +525,10 @@ export default function BlogMakerClient() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="description" className="text-sm font-medium">
+                    <label
+                      htmlFor="description"
+                      className="text-sm font-medium"
+                    >
                       <FileText className="w-4 h-4 inline mr-2" />
                       Description
                     </label>
@@ -526,7 +546,7 @@ export default function BlogMakerClient() {
 
                   <div className="space-y-2">
                     <label htmlFor="genre" className="text-sm font-medium">
-                      <FileText className="w-4 h-4 inline mr-2" />
+                      <House className="w-4 h-4 inline mr-2" />
                       Property Type
                     </label>
                     <Select value={genre} onValueChange={setGenre}>
@@ -534,7 +554,9 @@ export default function BlogMakerClient() {
                         <SelectValue placeholder="Select a property type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                        <SelectItem value="uncategorized">
+                          Uncategorized
+                        </SelectItem>
                         <SelectItem value="House">House</SelectItem>
                         <SelectItem value="Flat">Flat</SelectItem>
                         <SelectItem value="Farm House">Farm House</SelectItem>
@@ -585,7 +607,7 @@ export default function BlogMakerClient() {
 
                   <div className="space-y-2">
                     <label htmlFor="location" className="text-sm font-medium">
-                      <FileText className="w-4 h-4 inline mr-2" />
+                      <MapPin className="w-4 h-4 inline mr-2" />
                       Location
                     </label>
                     <Input
@@ -609,10 +631,23 @@ export default function BlogMakerClient() {
                       type="submit"
                       size="lg"
                       className="w-full md:w-auto"
-                      disabled={publishing || !name || !description || !slug || !price || !area || !coverImageURL || !location}
+                      disabled={
+                        publishing ||
+                        !name ||
+                        !description ||
+                        !slug ||
+                        !price ||
+                        !area ||
+                        !coverImageURL ||
+                        !location ||
+                        !purpose
+
+                      }
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {publishing ? "Publishing..." : "Publish Property To Gallery"}
+                      {publishing
+                        ? "Publishing..."
+                        : "Publish Property To Gallery"}
                     </Button>
                   </div>
                 </form>
@@ -626,10 +661,15 @@ export default function BlogMakerClient() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium">Upload Your Own Image</h3>
+                    <h3 className="text-sm font-medium">
+                      Upload Your Own Image
+                    </h3>
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                       <div className="flex-1">
-                        <label htmlFor="image-upload" className="text-sm font-medium block mb-2">
+                        <label
+                          htmlFor="image-upload"
+                          className="text-sm font-medium block mb-2"
+                        >
                           Upload Image (Max: 50MB)
                         </label>
                         <Input
@@ -661,7 +701,9 @@ export default function BlogMakerClient() {
 
                   {fileURLs.length > 0 && (
                     <div className="mt-8 border-t pt-6">
-                      <h3 className="text-sm font-medium mb-4">Property Images</h3>
+                      <h3 className="text-sm font-medium mb-4">
+                        Property Images
+                      </h3>
 
                       {/* Product Image Gallery - E-commerce Style */}
                       <div className="grid grid-cols-1 gap-4">
@@ -673,7 +715,10 @@ export default function BlogMakerClient() {
                             className="h-full w-full object-cover object-center"
                           />
                           <div className="absolute top-2 right-2">
-                            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                            <Badge
+                              variant="secondary"
+                              className="bg-background/80 backdrop-blur-sm"
+                            >
                               <CheckCircle2 className="w-3 h-3 mr-1 text-primary" />
                               Cover Image
                             </Badge>
@@ -686,7 +731,9 @@ export default function BlogMakerClient() {
                             <div
                               key={index}
                               className={`relative aspect-square cursor-pointer rounded-md overflow-hidden border transition-all ${
-                                url === coverImageURL ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-90"
+                                url === coverImageURL
+                                  ? "ring-2 ring-primary ring-offset-1"
+                                  : "hover:opacity-90"
                               }`}
                               onClick={() => setCoverImageURL(url)}
                             >
@@ -702,8 +749,9 @@ export default function BlogMakerClient() {
 
                       <div className="mt-4">
                         <p className="text-sm text-muted-foreground">
-                          Click on a thumbnail to set it as the cover image. The cover image will be displayed as the
-                          main image in listings.
+                          Click on a thumbnail to set it as the cover image. The
+                          cover image will be displayed as the main image in
+                          listings.
                         </p>
                       </div>
                     </div>
@@ -715,5 +763,5 @@ export default function BlogMakerClient() {
         </div>
       </div>
     </div>
-  )
+  );
 }

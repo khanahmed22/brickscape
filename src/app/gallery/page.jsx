@@ -199,7 +199,7 @@ export default function GalleryPage() {
                   onValueChange={(value) => setSelectedGenre(value === "clear" ? "" : value)}
                 >
                   <SelectTrigger className="h-12 min-w-[180px]">
-                    <SelectValue placeholder="Filter by genre" />
+                    <SelectValue placeholder="Filter by property type" />
                   </SelectTrigger>
                   <SelectContent>
                     {/* Clear Filter Option */}

@@ -50,6 +50,7 @@ export default function PropertyListingPage() {
   const [price, setPrice] = useState("")
   const [area, setArea] = useState("")
   const [location, setLocation] = useState("")
+  const [purpose,setPurpose] = useState("")
   const [blogContent, setBlogContent] = useState("")
   const [fileURL, setFileURL] = useState("")
   const [fileURLs, setFileURLs] = useState([])
@@ -168,6 +169,7 @@ export default function PropertyListingPage() {
       setPrice(property.price)
       setArea(property.area)
       setLocation(property.location || "Not specified")
+      setPurpose(property.purpose)
     }
   }, [property])
 
@@ -527,12 +529,17 @@ export default function PropertyListingPage() {
                   <Separator className="my-4" />
                   <div className="space-y-2">
                     <div className="flex justify-between">
+                      
                       <span className="text-muted-foreground">Price per sq ft</span>
                       <span className="font-medium">{price && area ? formatPrice(price / area) : "Not available"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Furnished</span>
                       <span className="font-medium">{propertyFeatures.furnished || "No"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Purpose</span>
+                      <span className="font-medium">{purpose}</span>
                     </div>
                   </div>
                 </CardContent>
