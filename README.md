@@ -1,22 +1,26 @@
-
 # Brickscape
 
-Real Estate made easy. Find your dream house within minutes!
+**Real Estate made easy.**  
+Find your dream house within minutes!
 
+---
 
-![App Screenshot](https://iili.io/3wtOkH7.png)
+## 🖼️ Screenshots
 
+![Screenshot 1](https://iili.io/3wtOkH7.png)  
+![Screenshot 2](https://iili.io/3wtkV44.png)  
+![Screenshot 3](https://iili.io/3wtvMDF.png)
 
-![App Screenshot](https://iili.io/3wtkV44.png)
+---
 
-![App Screenshot](https://iili.io/3wtvMDF.png)
+## 🛠️ Tech Stack
 
-## Tech Stack
+- **Next.js** – React framework for server-side rendering & routing  
+- **Clerk** – Secure and scalable authentication  
+- **Supabase** – Powerful backend with instant APIs and real-time database
 
-- **NEXTJS** ⚛️
-- **Clerk** for Authentication 🔒
-- **Supabase** for Backend 💾
+---
 
-## Visit Brickscape website now!
+## 🚀 Visit Brickscape
 
-🌐 https://brickscape.vercel.app/
+👉 [**brickscape.vercel.app**](https://brickscape.vercel.app/)
