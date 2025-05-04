@@ -75,7 +75,7 @@ export default function Navbar() {
           
 
           <NavLink href="/propertySearch" active={isActive("/propertySearch")}>
-            Buy/Sell
+            Buy • Rent
           </NavLink>
 
           
