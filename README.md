@@ -1,1 +1,1 @@
-BrickScape is an awesome app
+BrickScape
