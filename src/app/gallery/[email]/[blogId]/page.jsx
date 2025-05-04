@@ -36,7 +36,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useSupabaseData } from "@/app/utils/SupabaseContext"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useCompletion } from "ai/react"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 
@@ -71,8 +70,7 @@ export default function PropertyListingPage() {
   const [actionType, setActionType] = useState(null)
   const authorName = user?.firstName
 
-  const { countData, setCountData } = useSupabaseData()
-  const [currentCount, setCurrentCount] = useState(countData[0]?.count || 0)
+
   const [slug, setNewSlug] = useState(slugify(name))
   const pathname = usePathname()
   const allowCopy = useRef(false) // Ref to allow copy action
@@ -99,9 +97,7 @@ export default function PropertyListingPage() {
     toast.success("Listing URL copied to clipboard")
   }
 
-  useEffect(() => {
-    setCurrentCount(countData[0]?.count || 0)
-  }, [countData])
+ 
 
   // Handle keyboard navigation for image slider
   useEffect(() => {
@@ -121,19 +117,6 @@ export default function PropertyListingPage() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isFullscreen, fileURLs, currentImageIndex])
 
-  const { complete, completion } = useCompletion({
-    api:
-      actionType === "paraphrase"
-        ? "/api/rephrase"
-        : actionType === "summarize"
-          ? "/api/summarize"
-          : actionType === "spellcheck"
-            ? "/api/spellchecker"
-            : actionType === "generateBlog"
-              ? "/api/generateBlog"
-              : "",
-    body: { text: blogContent },
-  })
 
   const {
     data: property,

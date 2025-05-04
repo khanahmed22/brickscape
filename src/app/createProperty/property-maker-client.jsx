@@ -1,18 +1,15 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import { useSession, useUser } from "@clerk/nextjs"
 import getSupabaseClient from "@/app/utils/supabase"
-import { useSupabaseData } from "@/app/utils/SupabaseContext"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useCompletion } from "ai/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import {
   DollarSign,
-  Sparkles,
   ImageUp,
   Type,
   FileText,
@@ -21,7 +18,6 @@ import {
   Send,
   SquareDashedBottom,
   MapPin,
-  LandPlot,
   House
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -38,7 +34,7 @@ const JoditEditor = dynamic(() => import("jodit-react"), {
   ),
 })
 
-export default function BlogMakerClient() {
+export default function PropertyMakerClient() {
   const [tasks, setTasks] = useState([])
   const [isLoading, setLoading] = useState(false)
   const [name, setName] = useState("")
@@ -281,9 +277,7 @@ export default function BlogMakerClient() {
                         <SelectValue placeholder="Select your Purpose" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="uncategorized">
-                          Uncategorized
-                        </SelectItem>
+                        
                         <SelectItem value="Rent">Rent</SelectItem>
                         <SelectItem value="Sell">Sell</SelectItem>
                         

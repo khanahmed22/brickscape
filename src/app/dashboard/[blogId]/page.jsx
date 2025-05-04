@@ -7,7 +7,6 @@ import getSupabaseClient from "@/app/utils/supabase"
 import { useRouter, useParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useCompletion } from "ai/react"
 import { slugify } from "@/app/utils/slugify"
 import {
   HomeIcon as House,
@@ -92,7 +91,6 @@ export default function PropertyListingPage() {
   const { blogId: id } = useParams()
   const { user } = useUser()
   const { session } = useSession()
-  const editorRef = useRef(null)
 
   const email = user?.primaryEmailAddress?.emailAddress || ""
   const authorName = user?.firstName || "Property Owner"
@@ -100,8 +98,7 @@ export default function PropertyListingPage() {
 
   const [actionType, setActionType] = useState(null)
 
-  const { countData, setCountData } = useSupabaseData()
-  const [currentCount, setCurrentCount] = useState(countData[0]?.count || 0)
+ 
 
   const [prompt, setPrompt] = useState("adorable pig")
   const [imageSrc, setImageSrc] = useState(null)
@@ -116,7 +113,7 @@ export default function PropertyListingPage() {
     bedrooms: 3,
     bathrooms: 2,
     parking: 1,
-    yearBuilt: 2018,
+    yearBuilt: 2020,
     propertyType: genre || "Residential",
     furnished: "Partially",
   }
@@ -133,9 +130,7 @@ export default function PropertyListingPage() {
     toast.success("Listing URL copied to clipboard")
   }
 
-  useEffect(() => {
-    setCurrentCount(countData[0]?.count || 0)
-  }, [countData])
+  
 
   // Handle keyboard navigation for image slider
   useEffect(() => {
@@ -155,24 +150,7 @@ export default function PropertyListingPage() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isFullscreen, fileURLs, currentImageIndex])
 
-  const {
-    complete,
-    completion,
-    isLoading: aiLoading,
-  } = useCompletion({
-    api:
-      actionType === "paraphrase"
-        ? "/api/rephrase"
-        : actionType === "summarize"
-          ? "/api/summarize"
-          : actionType === "spellcheck"
-            ? "/api/spellchecker"
-            : actionType === "generateBlog"
-              ? "/api/generateBlog"
-              : "",
-    body: { text: blogContent },
-  })
-
+  
   const {
     data: property,
     mutate,
@@ -269,62 +247,7 @@ export default function PropertyListingPage() {
     }
   }
 
-  const handleUploadGeneratedImage = async () => {
-    if (!imageSrc) {
-      toast.info("Please generate an image first")
-      return
-    }
-
-    try {
-      setUploading(true)
-
-      // Fetch the image as a blob
-      const response = await fetch(imageSrc)
-      const blob = await response.blob()
-
-      // Create a file from the blob
-      const fileName = `ai-generated-${Math.random()}.png`
-      const aiGeneratedFile = new File([blob], fileName, { type: "image/png" })
-
-      // Get Supabase client
-      const clerkToken = await session?.getToken({ template: "supabase" })
-      const client = getSupabaseClient(clerkToken)
-
-      // Delete existing file if there is one
-      if (existingFilePath) {
-        const { error: deleteError } = await client.storage.from("images").remove([existingFilePath])
-        if (deleteError) {
-          console.error("Error deleting existing file:", deleteError)
-        }
-      }
-
-      // Upload to Supabase
-      const { data, error } = await client.storage.from("images").upload(fileName, aiGeneratedFile)
-
-      if (error) {
-        throw error
-      }
-
-      // Get public URL
-      const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(fileName)
-
-      if (urlError) {
-        throw urlError
-      }
-
-      // Update the fileURL state and set the existing file path
-      const newFileURL = publicUrlData.publicUrl
-      setFileURL(newFileURL)
-      setFileURLs([...fileURLs, newFileURL])
-      setExistingFilePath(fileName)
-
-      toast.success("AI-generated image uploaded successfully")
-    } catch (error) {
-      toast.error("Error uploading AI-generated image: " + error.message)
-    } finally {
-      setUploading(false)
-    }
-  }
+  
 
   const createOrUpdateProperty = async (e) => {
     e.preventDefault()
@@ -404,67 +327,10 @@ export default function PropertyListingPage() {
     }
   }
 
-  const updateCountInSupabase = async (newCount) => {
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
 
-    const { error } = await client.from("ai-table").update({ count: newCount }).eq("user_id", user.id)
+  
 
-    if (error) {
-      console.error("Error updating count in Supabase:", error)
-      toast.error("Failed to update AI usage count")
-      return false
-    }
-    return true
-  }
-
-  const handleAiAction = async (type) => {
-    if (!blogContent) {
-      toast.error("Text field is empty. Write something first.")
-      return
-    }
-
-    if (currentCount <= 0) {
-      toast.error("You've used all your AI actions. Please upgrade your plan.")
-      return
-    }
-
-    setLoading(true)
-    setActionType(type)
-
-    try {
-      const newCount = currentCount - 1
-      const updated = await updateCountInSupabase(newCount)
-
-      if (updated) {
-        setCurrentCount(newCount)
-        setCountData([{ ...countData[0], count: newCount }])
-        await complete(blogContent)
-      }
-    } catch (error) {
-      toast.error("Error processing AI action: " + error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (completion) {
-      setBlogContent(completion)
-      let successMessage = ""
-      if (actionType === "paraphrase") {
-        successMessage = "Content rephrased successfully"
-      } else if (actionType === "summarize") {
-        successMessage = "Content summarized successfully"
-      } else if (actionType === "spellcheck") {
-        successMessage = "Spelling checked and corrected successfully"
-      } else if (actionType === "generateBlog") {
-        successMessage = "Content generated successfully"
-      }
-      toast.success(successMessage)
-    }
-  }, [completion, actionType])
-
+  
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown date"
     const date = new Date(dateString)
@@ -493,29 +359,8 @@ export default function PropertyListingPage() {
     setNewSlug(slugify(name))
   }, [name])
 
-  const fetchImage = async () => {
-    setGeneratingImage(true)
-    setImageError(null)
-
-    try {
-      const response = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Server Error: ${response.status}`)
-      }
-
-      const { image } = await response.json()
-      setImageSrc(image)
-    } catch (err) {
-      setImageError(err.message)
-    } finally {
-      setGeneratingImage(false)
-    }
-  }
+  
+  
 
   // Image slider navigation
   const navigateImages = (direction) => {
@@ -644,7 +489,7 @@ export default function PropertyListingPage() {
             </Button>
 
             <div className="mb-2 flex items-center justify-center gap-x-2 text-lg font-bold bg-primary p-3 text-white rounded-lg">
-              How buyers see your profile <Eye/>
+              How buyers see your property <Eye/>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1137,10 +982,7 @@ export default function PropertyListingPage() {
                   <h1 className="text-3xl font-bold tracking-tight">Edit Property</h1>
                   <p className="text-muted-foreground mt-1">Make changes to your property listing</p>
                 </div>
-                <Badge variant="outline" className="px-3 py-1.5">
-                  <Sparkles className="w-4 h-4 mr-1.5 text-primary" />
-                  <span className="font-medium">{currentCount} AI actions remaining</span>
-                </Badge>
+                
               </div>
 
               <form onSubmit={createOrUpdateProperty}>
