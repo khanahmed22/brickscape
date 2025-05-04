@@ -60,7 +60,7 @@ export default function ContactForm() {
         message: "",
       })
 
-      // Reset Turnstile
+    
       setTurnstileToken(null)
     } catch (error) {
       toast.error("Failed to send message. Please try again.")

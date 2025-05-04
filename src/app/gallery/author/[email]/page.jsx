@@ -33,7 +33,7 @@ export default function AuthorPage() {
         const clerkToken = await session?.getToken({ template: "supabase" })
         const client = getSupabaseClient(clerkToken)
 
-        // Fetch author data from your database
+   
         const { data, error } = await client
           .from("all_tasks")
           .select("email, created_at")
@@ -43,7 +43,7 @@ export default function AuthorPage() {
 
         if (error) throw error
 
-        // Count posts by this author
+     
         const { count, error: countError } = await client
           .from("all_tasks")
           .select("*", { count: "exact" })
@@ -51,7 +51,7 @@ export default function AuthorPage() {
 
         if (countError) throw countError
 
-        // Fetch all posts by this author
+       
         const { data: postsData, error: postsError } = await client
           .from("all_tasks")
           .select("id, name, description, created_at, slug, fileURL")

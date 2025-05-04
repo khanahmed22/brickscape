@@ -51,14 +51,14 @@ export default function PropertySearchPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Get search parameters from URL
+
   const initialSearchTerm = searchParams.get("q") || ""
   const initialPurpose = searchParams.get("purpose") || "all"
   const initialArea = searchParams.get("area") || ""
   const initialPropertyType = searchParams.get("type") || ""
   const initialPriceRange = searchParams.get("price") || ""
 
-  // Search and filter states
+
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm)
   const [purpose, setPurpose] = useState(initialPurpose)
   const [area, setArea] = useState(initialArea)
@@ -70,7 +70,7 @@ export default function PropertySearchPage() {
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState(initialPurpose === "rent" ? "rent" : "buy")
 
-  // Fetch properties data
+
   const fetchProperties = async (clerkToken) => {
     const client = clerkToken ? getSupabaseClient(clerkToken) : getSupabaseClient()
     const { data, error } = await client.from("all_tasks").select()
@@ -95,7 +95,7 @@ export default function PropertySearchPage() {
     { revalidateOnFocus: false },
   )
 
-  // Set dataReady to true when data is loaded
+
   useEffect(() => {
     if (properties && !isLoading) {
       const timer = setTimeout(() => {
@@ -107,7 +107,7 @@ export default function PropertySearchPage() {
     }
   }, [properties, isLoading])
 
-  // Get unique property types
+  
   const uniquePropertyTypes = useMemo(() => {
     if (!properties) return []
 
@@ -119,7 +119,7 @@ export default function PropertySearchPage() {
     return types
   }, [properties])
 
-  // Get unique areas
+ 
   const uniqueAreas = useMemo(() => {
     if (!properties) return []
 
@@ -132,31 +132,31 @@ export default function PropertySearchPage() {
     return areas
   }, [properties])
 
-  // Filter and sort properties
+ 
   const filteredProperties = useMemo(() => {
     if (!properties) return []
 
     return properties.filter((property) => {
-      // Search term filter
+   
       const matchesSearch =
         !searchTerm ||
         property.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         property.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         property.location?.toLowerCase().includes(searchTerm.toLowerCase())
 
-      // Purpose filter
+  
       const matchesPurpose =
         purpose === "all" ||
         (purpose === "buy" && property.purpose?.toLowerCase() === "sell") ||
         (purpose === "rent" && property.purpose?.toLowerCase() === "rent")
 
-      // Area filter
+     
       const matchesArea = !area || property.location === area
 
-      // Property type filter
+     
       const matchesPropertyType = !propertyType || property.genre === propertyType
 
-      // Price range filter
+     
       let matchesPriceRange = true
       if (priceRange) {
         const price = Number(property.price) || 0
@@ -192,7 +192,7 @@ export default function PropertySearchPage() {
     })
   }, [filteredProperties, sortBy])
 
-  // Format date
+
   const formatDate = (dateString) => {
     if (!dateString) return ""
     const date = new Date(dateString)
@@ -203,7 +203,7 @@ export default function PropertySearchPage() {
     }).format(date)
   }
 
-  // Format price
+
   const formatPrice = (price) => {
     if (!price) return "Price on request"
     return new Intl.NumberFormat("en-US", {
@@ -226,7 +226,7 @@ export default function PropertySearchPage() {
   }
 
   function handleSearch() {
-    // Build query parameters from search filters
+    
     const params = new URLSearchParams()
     if (searchTerm) params.append("q", searchTerm)
     if (purpose && purpose !== "all") params.append("purpose", purpose)
@@ -234,7 +234,7 @@ export default function PropertySearchPage() {
     if (propertyType) params.append("type", propertyType)
     if (priceRange) params.append("price", priceRange)
 
-    // Update URL with new search parameters without reloading the page
+
     const url = `/property-search?${params.toString()}`
     window.history.pushState({}, "", url)
   }
@@ -246,11 +246,10 @@ export default function PropertySearchPage() {
     setPropertyType("")
     setPriceRange("")
 
-    // Update URL to remove all parameters
     router.push("/property-search")
   }
 
-  // Animation variants
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -282,7 +281,7 @@ export default function PropertySearchPage() {
     },
   }
 
-  // Get purpose badge variant
+ 
   const getPurposeBadgeVariant = (purpose) => {
     if (!purpose) return "outline"
     switch (purpose?.toLowerCase()) {
@@ -332,7 +331,7 @@ export default function PropertySearchPage() {
                     value="buy"
                     onClick={() => {
                       setPurpose("buy");
-                      // Update URL
+                      
                       const params = new URLSearchParams(
                         window.location.search
                       );
@@ -348,7 +347,7 @@ export default function PropertySearchPage() {
                     value="rent"
                     onClick={() => {
                       setPurpose("rent");
-                      // Update URL
+                     
                       const params = new URLSearchParams(
                         window.location.search
                       );

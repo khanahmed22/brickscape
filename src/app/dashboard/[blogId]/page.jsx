@@ -106,9 +106,9 @@ export default function PropertyListingPage() {
   const [imageError, setImageError] = useState(null)
   const [genre, setGenre] = useState("")
   const pathname = usePathname()
-  const allowCopy = useRef(false) // Ref to allow copy action
+  const allowCopy = useRef(false) 
 
-  // Mock property features - in a real app, these would come from the database
+ 
   const propertyFeatures = {
     bedrooms: 3,
     bathrooms: 2,
@@ -132,7 +132,7 @@ export default function PropertyListingPage() {
 
   
 
-  // Handle keyboard navigation for image slider
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isFullscreen) {
@@ -170,7 +170,7 @@ export default function PropertyListingPage() {
       setDescription(property.description)
       setBlogContent(property.blogContent)
       setFileURL(property.fileURL)
-      // Handle fileURLs array if it exists, otherwise create an array with the single fileURL
+      
       setFileURLs(property.fileURLs || (property.fileURL ? [property.fileURL] : []))
       setGenre(property.genre || "")
       setPrice(property.price)
@@ -185,7 +185,7 @@ export default function PropertyListingPage() {
     const client = getSupabaseClient(clerkToken)
 
     try {
-      // Delete from both tables
+
       await client.from("tasks").delete().eq("slug", id)
       await client.from("all_tasks").delete().eq("slug", id)
 
@@ -256,7 +256,7 @@ export default function PropertyListingPage() {
 
     try {
       if (id) {
-        // Update the tasks table
+     
         await client
           .from("tasks")
           .update({
@@ -274,7 +274,7 @@ export default function PropertyListingPage() {
           })
           .eq("slug", id)
 
-        // Also update the all_tasks table with the same data
+     
         await client
           .from("all_tasks")
           .update({
@@ -292,7 +292,7 @@ export default function PropertyListingPage() {
           })
           .eq("slug", id)
       } else {
-        // For new property listings, insert into both tables
+       
         const propertyData = {
           name,
           email,
@@ -316,7 +316,7 @@ export default function PropertyListingPage() {
       toast.success("Property listing saved successfully")
       setEditMode(false)
 
-      // If this is a new property or the slug changed, redirect to the new URL
+     
       if (!id || id !== slug) {
         router.push(`/blog/${slug}`)
       }
@@ -362,7 +362,7 @@ export default function PropertyListingPage() {
   
   
 
-  // Image slider navigation
+
   const navigateImages = (direction) => {
     if (!fileURLs || fileURLs.length <= 1) return
 
@@ -385,7 +385,7 @@ export default function PropertyListingPage() {
     e.preventDefault()
     setIsSending(true)
 
-    // Simulate sending a message
+   
     setTimeout(() => {
       toast.success("Your message has been sent to the seller")
       setContactName("")
@@ -453,7 +453,7 @@ export default function PropertyListingPage() {
     )
   }
 
-  // Error state
+
   if (propertyError) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

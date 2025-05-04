@@ -73,9 +73,9 @@ export default function PropertyListingPage() {
 
   const [slug, setNewSlug] = useState(slugify(name))
   const pathname = usePathname()
-  const allowCopy = useRef(false) // Ref to allow copy action
+  const allowCopy = useRef(false) 
 
-  // Mock property features - in a real app, these would come from the database
+
   const propertyFeatures = {
     bedrooms: 3,
     bathrooms: 2,
@@ -99,7 +99,7 @@ export default function PropertyListingPage() {
 
  
 
-  // Handle keyboard navigation for image slider
+ 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isFullscreen) {
@@ -131,7 +131,7 @@ export default function PropertyListingPage() {
       if (error) throw error
       return data
     } else {
-      // Fetch without authentication
+      
       const client = getSupabaseClient()
       const { data, error } = await client.from("all_tasks").select().eq("slug", id).single()
       if (error) throw error
@@ -145,7 +145,7 @@ export default function PropertyListingPage() {
       setDescription(property.description)
       setBlogContent(property.blogContent)
       setFileURL(property.fileURL)
-      // Handle fileURLs array if it exists, otherwise create an array with the single fileURL
+     
       setFileURLs(property.fileURLs || (property.fileURL ? [property.fileURL] : []))
       setAuthorEmail(property.email)
       setAuthorAvatar(property.authorAvatar)
@@ -184,7 +184,7 @@ export default function PropertyListingPage() {
     setNewSlug(slugify(name))
   }, [name])
 
-  // Image slider navigation
+ 
   const navigateImages = (direction) => {
     if (!fileURLs || fileURLs.length <= 1) return
 
@@ -207,7 +207,7 @@ export default function PropertyListingPage() {
     e.preventDefault()
     setIsSending(true)
 
-    // Simulate sending a message
+   
     setTimeout(() => {
       toast.success("Your message has been sent to the seller")
       setContactName("")
@@ -217,7 +217,7 @@ export default function PropertyListingPage() {
     }, 1500)
   }
 
-  // Loading skeleton for the property view
+
   if (isPropertyLoading) {
     return (
       <div className="min-h-screen bg-background">

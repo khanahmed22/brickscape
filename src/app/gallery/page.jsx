@@ -35,7 +35,7 @@ export default function HomePage() {
   const router = useRouter()
   const canvasRef = useRef(null)
 
-  // Search and filter states
+
   const [searchTerm, setSearchTerm] = useState("")
   const [purpose, setPurpose] = useState("all")
   const [area, setArea] = useState("")
@@ -45,7 +45,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("buy")
 
-  // Fetch properties data
+
   const fetchProperties = async (clerkToken) => {
     const client = clerkToken ? getSupabaseClient(clerkToken) : getSupabaseClient()
     const { data, error } = await client.from("all_tasks").select()
@@ -70,7 +70,7 @@ export default function HomePage() {
     { revalidateOnFocus: false },
   )
 
-  // Set dataReady to true when data is loaded
+
   useEffect(() => {
     if (properties && !isLoading) {
       const timer = setTimeout(() => {
@@ -82,7 +82,7 @@ export default function HomePage() {
     }
   }, [properties, isLoading])
 
-  // Get unique property types
+
   const uniquePropertyTypes = useMemo(() => {
     if (!properties) return []
 
@@ -94,7 +94,7 @@ export default function HomePage() {
     return types
   }, [properties])
 
-  // Get unique areas
+
   const uniqueAreas = useMemo(() => {
     if (!properties) return []
 
@@ -107,7 +107,7 @@ export default function HomePage() {
     return areas
   }, [properties])
 
-  // Format price
+  
   const formatPrice = (price) => {
     if (!price) return "Price on request"
     return new Intl.NumberFormat("en-US", {
@@ -130,7 +130,7 @@ export default function HomePage() {
   }
 
   function handleSearch() {
-    // Build query parameters from search filters
+   
     const params = new URLSearchParams()
     if (searchTerm) params.append("q", searchTerm)
     if (purpose && purpose !== "all") params.append("purpose", purpose)
@@ -138,11 +138,11 @@ export default function HomePage() {
     if (propertyType) params.append("type", propertyType)
     if (priceRange) params.append("price", priceRange)
 
-    // Navigate to search page with query parameters
+  
     router.push(`/propertySearch?${params.toString()}`)
   }
 
-  // Animation variants
+  
   const fadeIn = {
     hidden: { opacity: 0 },
     visible: {
@@ -187,7 +187,7 @@ export default function HomePage() {
     },
   }
 
-  // Get purpose badge variant
+  
   const getPurposeBadgeVariant = (purpose) => {
     if (!purpose) return "outline"
     switch (purpose?.toLowerCase()) {
@@ -200,7 +200,7 @@ export default function HomePage() {
     }
   }
 
-  // Pixel animation for hero section
+  
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -209,13 +209,13 @@ export default function HomePage() {
     const width = (canvas.width = window.innerWidth)
     const height = (canvas.height = window.innerHeight * 0.8)
 
-    // Create pixel grid
+  
     const pixelSize = 20
     const cols = Math.ceil(width / pixelSize)
     const rows = Math.ceil(height / pixelSize)
     const pixels = []
 
-    // Initialize pixels
+ 
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         pixels.push({
@@ -229,19 +229,19 @@ export default function HomePage() {
       }
     }
 
-    // Animation loop
+
     let animationId
     const animate = () => {
       ctx.clearRect(0, 0, width, height)
 
-      // Draw gradient background
+     
       const gradient = ctx.createLinearGradient(0, 0, width, height)
       gradient.addColorStop(0, "#1a365d")
       gradient.addColorStop(1, "#2d3748")
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, width, height)
 
-      // Draw pixels
+     
       pixels.forEach((pixel) => {
         pixel.phase += pixel.speed
         const alpha = ((Math.sin(pixel.phase) + 1) / 2) * 0.5 + 0.1
@@ -254,7 +254,7 @@ export default function HomePage() {
 
     animate()
 
-    // Handle resize
+   
     const handleResize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight * 0.8

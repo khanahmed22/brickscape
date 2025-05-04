@@ -81,21 +81,21 @@ export default function Dashboard() {
 
   function handleViewBlog(slug) {
     setLoading(true)
-    // Find the specific blog post with the matching slug
+  
     const blogPost = tasks.find((task) => task.slug === slug)
 
     if (blogPost) {
-      // Extract email from the specific blog post
+      
       const email = blogPost.email
       const id = blogPost.id
       router.push(`/dashboard/${slug}`)
     } else {
-      // Fallback if blog post not found
+   
       router.push(`/dashboard/${slug}`)
     }
   }
 
-  // Filter and sort tasks
+
   const filteredTasks = tasks
     ? tasks.filter(
         (task) =>
@@ -115,7 +115,7 @@ export default function Dashboard() {
     return 0;
   });
 
-  // Format date
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -126,7 +126,7 @@ export default function Dashboard() {
     }).format(date);
   };
 
-  // Animation variants
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge"
 import { slugify } from "@/app/utils/slugify"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Dynamically import JoditEditor with SSR disabled
+
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
   loading: () => (
@@ -121,7 +121,7 @@ export default function PropertyMakerClient() {
         )
         setEditingTaskId(null)
       } else {
-        // Create the blog post data object
+      
         const blogData = {
           name,
           email,

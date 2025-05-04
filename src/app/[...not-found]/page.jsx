@@ -13,7 +13,7 @@ export default function NotFound() {
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
-  // Prevent hydration errors
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -25,7 +25,7 @@ export default function NotFound() {
     }
   }
 
-  // Animation variants
+ 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -46,11 +46,10 @@ export default function NotFound() {
     },
   }
 
-  // Animated text for the typewriter effect
+
   const phrases = [
     "The page seems to have vanished...",
-    "This page is taking a creative break...",
-    "Our AI couldn't find this page...",
+    "This page is taking a break...",
     "This page is still being written...",
   ]
 
