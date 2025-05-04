@@ -48,11 +48,10 @@ export default function Footer() {
           <div className="flex flex-col">
             <div className="flex items-center mb-4">
               <Sparkles className="h-6 w-6 text-primary mr-2" />
-              <h2 className="text-xl font-bold">InkWise AI</h2>
+              <h2 className="text-xl font-bold">Brickscape</h2>
             </div>
             <p className="text-muted-foreground mb-4 max-w-xs">
-              The intelligent writing assistant that helps you craft exceptional blog content in minutes, not hours.
-            </p>
+              Where Dreams Find Their Address</p>
             <div className="flex space-x-4 mt-2">
               <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }}>
                 <Link href="#" className="text-muted-foreground hover:text-primary transition-colors" prefetch={false}>
@@ -86,11 +85,11 @@ export default function Footer() {
             <h3 className="text-sm font-medium uppercase tracking-wider mb-4">Quick Links</h3>
             <ul className="space-y-2">
               {[
-                { name: "Home", href: "/" },
-                { name: "Features", href: "/features" },
-                { name: "Pricing", href: "/pricing" },
-                { name: "Blog", href: "/blog" },
-                { name: "Dashboard", href: "/dashboard" },
+                { name: "Our Story", href: "#" },
+                { name: "Blogs", href: "#" },
+                { name: "Careers", href: "#" },
+                { name: "Gurus", href: "#" },
+                
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -110,10 +109,9 @@ export default function Footer() {
             <h3 className="text-sm font-medium uppercase tracking-wider mb-4">Resources</h3>
             <ul className="space-y-2">
               {[
-                { name: "Writing Tips", href: "/resources/writing-tips", icon: <PenTool className="h-4 w-4" /> },
-                { name: "AI Tutorials", href: "/resources/tutorials", icon: <Sparkles className="h-4 w-4" /> },
-                { name: "Documentation", href: "/docs", icon: <BookOpen className="h-4 w-4" /> },
-                { name: "Support", href: "/support", icon: <MessageSquare className="h-4 w-4" /> },
+                
+                { name: "Upcoming Projects", href: "#", icon: <BookOpen className="h-4 w-4" /> },
+                { name: "Support", href: "#", icon: <MessageSquare className="h-4 w-4" /> },
               ].map((resource) => (
                 <li key={resource.name}>
                   <Link
@@ -132,7 +130,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-medium uppercase tracking-wider mb-4">Stay Updated</h3>
             <p className="text-muted-foreground mb-4 text-sm">
-              Subscribe to our newsletter for the latest features, tips, and AI writing insights.
+              Stay ahead of the curve—subscribe for the latest and trendiest property listings
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="flex max-w-xs">
@@ -192,8 +190,8 @@ export default function Footer() {
             </form>
             <div className="mt-4 flex items-center text-sm text-muted-foreground">
               <Mail className="h-4 w-4 mr-2" />
-              <a href="mailto:contact@inkwise.ai" className="hover:text-primary transition-colors">
-                contact@inkwise.ai
+              <a href="mailto:contact@brickscape" className="hover:text-primary transition-colors">
+                contact@brickscape
               </a>
             </div>
           </div>
@@ -202,7 +200,7 @@ export default function Footer() {
         <div className="mt-10 pt-6 border-t border-border/40">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} InkWise AI - All rights reserved.
+              &copy; {new Date().getFullYear()} Brickscape - All rights reserved.
             </p>
             <div className="mt-4 md:mt-0 flex space-x-6 text-sm text-muted-foreground">
               <Link href="/privacy" className="hover:text-primary transition-colors">

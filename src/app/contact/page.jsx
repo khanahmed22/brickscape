@@ -18,8 +18,8 @@ import {
 } from "lucide-react"
 
 export const metadata = {
-  title: "Contact Us | Inkwise AI",
-  description: "Get in touch with the Inkwise AI team for support, feedback, or inquiries.",
+  title: "Contact Us | Brickscape",
+  description: "Get in touch with the Brickscape team for support, feedback, or inquiries.",
 }
 
 export default function ContactPage() {
@@ -40,7 +40,7 @@ export default function ContactPage() {
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">We&apos;d Love to Hear From You</h1>
             <p className="text-lg text-muted-foreground">
-              Have questions about Inkwise AI? Need help with your account? Our team is here to assist you every step of
+              Have questions about a property? Need help with your sale/purchase? Our team is here to assist you every step of
               the way.
             </p>
           </div>
@@ -57,7 +57,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-medium">Email Us</h3>
-                      <p className="text-muted-foreground">support@inkwiseai.com</p>
+                      <p className="text-muted-foreground">support@brickscape.com</p>
                       <p className="text-sm text-muted-foreground mt-1">We&apos;ll respond within 24 hours</p>
                     </div>
                   </div>
