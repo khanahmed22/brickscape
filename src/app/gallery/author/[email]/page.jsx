@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { Mail, User, Calendar, BookOpen, ArrowLeft, Clock } from "lucide-react"
+import { Mail, User, Calendar, ArrowLeft, Clock, House } from "lucide-react"
 import getSupabaseClient from "@/app/utils/supabase"
 import { useSession,useUser } from "@clerk/nextjs"
 import { Separator } from "@/components/ui/separator"
@@ -204,7 +204,7 @@ export default function AuthorPage() {
                 </div>
 
                 <div className="flex items-center text-muted-foreground">
-                  <BookOpen className="mr-2 h-4 w-4" />
+                  <House className="mr-2 h-4 w-4" />
                   <span>
                     {author.postCount} {author.postCount === 1 ? "property" : "properties"}
                   </span>
@@ -244,7 +244,7 @@ export default function AuthorPage() {
                   </div>
                 ) : (
                   <div className="h-48 bg-muted flex items-center justify-center">
-                    <BookOpen className="h-12 w-12 text-muted-foreground opacity-20" />
+                    <House className="h-12 w-12 text-muted-foreground opacity-20" />
                   </div>
                 )}
 

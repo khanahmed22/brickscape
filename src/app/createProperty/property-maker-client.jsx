@@ -426,7 +426,7 @@ export default function PropertyMakerClient() {
                       <Send className="w-4 h-4 mr-2" />
                       {publishing
                         ? "Publishing..."
-                        : "Publish Property To Gallery"}
+                        : "Publish Property"}
                     </Button>
                   </div>
                 </form>

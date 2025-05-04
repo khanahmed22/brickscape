@@ -11,9 +11,8 @@ import {
   Mail,
   ArrowRight,
   Sparkles,
-  PenTool,
-  BookOpen,
   MessageSquare,
+  Hammer,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -108,7 +107,7 @@ export default function Footer() {
             <ul className="space-y-2">
               {[
                 
-                { name: "Upcoming Projects", href: "#", icon: <BookOpen className="h-4 w-4" /> },
+                { name: "Upcoming Projects", href: "#", icon: <Hammer className="h-4 w-4" /> },
                 { name: "Support", href: "#", icon: <MessageSquare className="h-4 w-4" /> },
               ].map((resource) => (
                 <li key={resource.name}>

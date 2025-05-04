@@ -8,12 +8,12 @@ import {
   Filter,
   ArrowUpRight,
   Clock,
-  BookOpen,
   LayoutGrid,
   LayoutList,
   Sparkles,
   MapPin,
   SquareDashedBottom,
+  HousePlus,
 } from "lucide-react";
 import { useSession, useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -281,12 +281,11 @@ export default function Dashboard() {
               className="flex flex-col items-center justify-center py-12 text-center"
             >
               <div className="bg-primary/5 p-6 rounded-full mb-6">
-                <BookOpen className="h-12 w-12 text-primary" />
+                <HousePlus className="h-12 w-12 text-primary" />
               </div>
               <h2 className="text-2xl font-bold mb-3">No ads yet</h2>
               <p className="text-muted-foreground max-w-md mb-8">
-                Start your writing journey by creating your first blog post.
-                Share your thoughts, ideas, and stories with the world.
+                Post your first property now
               </p>
               <Button
                 size="lg"
@@ -375,8 +374,8 @@ export default function Dashboard() {
 
                           
 
-                          <div className="flex items-center justify-between text-muted-foreground line-clamp-2">
-                          <span className="flex items-center space-x-2"><MapPin size={15}/> {task.location}</span> <span className="flex items-center space-x-2"><SquareDashedBottom size={15}/> {task.area} Sq ft</span>
+                          <div className="flex flex-col items-start space-y-2 justify-between text-muted-foreground line-clamp-2">
+                          <span className="flex items-center text-sm"><MapPin size={17} className="mr-2"/> {task.location}</span> <span className="flex items-center space-x-2"><SquareDashedBottom size={17} className="mr-2"/> {task.area} Sq ft</span>
                           </div>
 
                           <Separator className="mb-2 mt-2"/>

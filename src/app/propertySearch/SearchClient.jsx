@@ -742,18 +742,18 @@ export default function PropertySearchPage() {
 
                       <div className="flex flex-wrap gap-2 mt-3">
                         {property.genre && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs mb-2">
                             {property.genre}
                           </Badge>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between text-muted-foreground line-clamp-2">
-                        <span className="flex items-center space-x-2">
-                          <MapPin size={15} /> {property.location}
+                      <div className="flex flex-col space-y-2 items-start justify-between text-muted-foreground line-clamp-2">
+                        <span className="flex items-center space-x-2 text-sm">
+                          <MapPin size={17} className="mr-2" /> {property.location}
                         </span>{" "}
-                        <span className="flex items-center space-x-2">
-                          <SquareDashedBottom size={15} /> {property.area} Sq ft
+                        <span className="flex items-center space-x-2 text-sm">
+                          <SquareDashedBottom size={17} className="mr-2"/> {property.area} Sq ft
                         </span>
                       </div>
 
