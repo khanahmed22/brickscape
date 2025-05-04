@@ -29,8 +29,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { slugify } from "@/app/utils/slugify"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
 
 // Dynamically import JoditEditor with SSR disabled
 const JoditEditor = dynamic(() => import("jodit-react"), {
@@ -62,60 +60,12 @@ export default function BlogMakerClient() {
   const [publishing, setPublishing] = useState(false)
   const [fileURLs, setFileURLs] = useState([])
   const [coverImageURL, setCoverImageURL] = useState("")
-  const [actionType, setActionType] = useState(null)
 
-  const [imageSrc, setImageSrc] = useState(null)
-
-  const [error, setError] = useState(null)
-  const [prompt, setPrompt] = useState("")
 
   const email = user?.primaryEmailAddress?.emailAddress || ""
   const authorName = user?.firstName
   const authorAvatar = user?.imageUrl
 
-  const { countData, setCountData } = useSupabaseData()
-  const currentCount = countData?.[0]?.count || 0
-
-  const [loading, setloading] = useState(false)
-
-  const {
-    complete: completeParaphrase,
-    completion: paraphraseCompletion,
-    isLoading: paraphraseLoading,
-  } = useCompletion({
-    api: "/api/rephrase",
-    body: { text: blogContent },
-  })
-
-  const {
-    complete: completeSummarize,
-    completion: summarizeCompletion,
-    isLoading: summarizeLoading,
-  } = useCompletion({
-    api: "/api/summarize",
-    body: { text: blogContent },
-  })
-
-  const {
-    complete: completeSpellcheck,
-    completion: spellcheckCompletion,
-    isLoading: spellcheckLoading,
-  } = useCompletion({
-    api: "/api/spellchecker",
-    body: { text: blogContent },
-  })
-
-  const {
-    complete: completeGenerateBlog,
-    completion: generateBlogCompletion,
-    isLoading: generateBlogLoading,
-  } = useCompletion({
-    api: "/api/generateBlog",
-    body: { text: blogContent },
-  })
-
-  // Combined loading state for UI
-  const aiLoading = paraphraseLoading || summarizeLoading || spellcheckLoading || generateBlogLoading
 
   useEffect(() => {
     if (!user) return
@@ -132,39 +82,13 @@ export default function BlogMakerClient() {
     loadTasks()
   }, [user, session])
 
-  // Update slug when name changes
+  
   useEffect(() => {
     setSlug(slugify(name))
   }, [name])
 
-  // Handle completions from different AI actions
-  useEffect(() => {
-    if (paraphraseCompletion) {
-      setBlogContent(paraphraseCompletion)
-      toast.success("Blog content rephrased successfully")
-    }
-  }, [paraphraseCompletion])
+  
 
-  useEffect(() => {
-    if (summarizeCompletion) {
-      setBlogContent(summarizeCompletion)
-      toast.success("Blog content summarized successfully")
-    }
-  }, [summarizeCompletion])
-
-  useEffect(() => {
-    if (spellcheckCompletion) {
-      setBlogContent(spellcheckCompletion)
-      toast.success("Spelling corrected successfully")
-    }
-  }, [spellcheckCompletion])
-
-  useEffect(() => {
-    if (generateBlogCompletion) {
-      setBlogContent(generateBlogCompletion)
-      toast.success("Blog generated successfully")
-    }
-  }, [generateBlogCompletion])
 
   async function createTask(e) {
     e.preventDefault()
@@ -219,17 +143,17 @@ export default function BlogMakerClient() {
           genre,
         }
 
-        // Insert into tasks table
+    
         const { data, error } = await client.from("tasks").insert(blogData).select()
 
         if (error) throw error
 
-        // Also insert the same data into all_tasks table
+  
         const { error: allTasksError } = await client.from("all_tasks").insert(blogData)
 
         if (allTasksError) {
           console.error("Error inserting into all_tasks:", allTasksError)
-          toast.warning("Blog saved to tasks but failed to save to all_tasks")
+          toast.warning("Property saved to tasks but failed to save to all_tasks")
         }
       }
 
@@ -254,30 +178,6 @@ export default function BlogMakerClient() {
     }
   }
 
-  const config = useMemo(
-    () => ({
-      placeholder:
-        "Start writing your blog content here... or Write Topic Name with number of words for Blog made by AI",
-      width: "100%",
-      height: "400px",
-      uploader: {
-        insertImageAsBase64URI: true,
-        url: "https://freeimage.host/api/1/upload",
-        filesVariableName: (i) => `source[${i}]`,
-        headers: {
-          Authorization: `Client-ID ${process.env.NEXT_PUBLIC_FREE_IMAGE_HOST_KEY}`,
-        },
-        format: "json",
-        isSuccess: (resp) => !resp.error,
-        process: (resp) => ({
-          files: resp.image ? [resp.image.url] : [],
-          path: resp.image ? resp.image.url : "",
-          error: resp.error,
-        }),
-      },
-    }),
-    [],
-  )
 
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files))
@@ -297,7 +197,7 @@ export default function BlogMakerClient() {
 
       const uploadedUrls = []
 
-      // Upload each file
+     
       for (const file of files) {
         const fileExt = file.name.split(".").pop()
         const fileName = `${Math.random()}.${fileExt}`
@@ -323,7 +223,7 @@ export default function BlogMakerClient() {
       if (uploadedUrls.length > 0) {
         setFileURLs([...fileURLs, ...uploadedUrls])
 
-        // Set the first uploaded image as cover if no cover is selected yet
+
         if (!coverImageURL) {
           setCoverImageURL(uploadedUrls[0])
         }
@@ -338,123 +238,8 @@ export default function BlogMakerClient() {
     }
   }
 
-  const handleUploadGeneratedImage = async () => {
-    if (!imageSrc) {
-      toast.info("Please generate an image first")
-      return
-    }
-
-    try {
-      setUploading(true)
-
-      // Fetch the image as a blob
-      const response = await fetch(imageSrc)
-      const blob = await response.blob()
-
-      // Create a file from the blob
-      const fileName = `ai-generated-${Math.random()}.png`
-      const aiGeneratedFile = new File([blob], fileName, { type: "image/png" })
-
-      // Get Supabase client
-      const clerkToken = await session?.getToken({ template: "supabase" })
-      const client = getSupabaseClient(clerkToken)
-
-      // Upload to Supabase
-      const { data, error } = await client.storage.from("images").upload(fileName, aiGeneratedFile)
-
-      if (error) {
-        throw error
-      }
-
-      // Get public URL
-      const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(fileName)
-
-      if (urlError) {
-        throw urlError
-      }
-
-      // Update the fileURL state
-      setFileURLs([...fileURLs, publicUrlData.publicUrl])
-      toast.success("AI-generated image uploaded successfully")
-    } catch (error) {
-      toast.error("Error uploading AI-generated image: " + error.message)
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  const updateCountInSupabase = async (newCount) => {
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
-
-    const { error } = await client.from("ai_table").update({ count: newCount }).eq("email", email)
-
-    if (error) {
-      console.error("Error updating count in Supabase:", error)
-      toast.error("Failed to update AI usage count")
-    }
-  }
-
-  const handleAiAction = async (type) => {
-    if (!blogContent) {
-      toast.error("Text field is empty. Write something first.")
-      return
-    }
-
-    if (currentCount <= 0) {
-      toast.error("You've used all your AI actions. Please upgrade your plan.")
-      return
-    }
-
-    setActionType(type)
-
-    const newCount = currentCount - 1
-    setCountData([{ ...countData[0], count: newCount }])
-
-    await updateCountInSupabase(newCount)
-
-    // Call the appropriate complete function based on action type
-    switch (type) {
-      case "paraphrase":
-        completeParaphrase(blogContent)
-        break
-      case "summarize":
-        completeSummarize(blogContent)
-        break
-      case "spellcheck":
-        completeSpellcheck(blogContent)
-        break
-      case "generateBlog":
-        completeGenerateBlog(blogContent)
-        break
-      default:
-        break
-    }
-  }
-
-  const fetchImage = async () => {
-    setloading(true)
-    setError(null)
-
-    try {
-      const response = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Server Error: ${response.status}`)
-      }
-
-      const { image } = await response.json()
-      setImageSrc(image)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setloading(false)
-    }
-  }
+  
+  
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -662,7 +447,7 @@ export default function BlogMakerClient() {
                 <CardContent>
                   <div className="space-y-4">
                     <h3 className="text-sm font-medium">
-                      Upload Your Own Image
+                      Upload Your Property images
                     </h3>
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                       <div className="flex-1">
@@ -708,11 +493,11 @@ export default function BlogMakerClient() {
                       {/* Product Image Gallery - E-commerce Style */}
                       <div className="grid grid-cols-1 gap-4">
                         {/* Main Image Display */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border bg-muted">
+                        <div className="relative aspect-[4/3] w-[200px] overflow-hidden rounded-lg border bg-muted">
                           <img
                             src={coverImageURL || fileURLs[0]}
                             alt="Main view"
-                            className="h-full w-full object-cover object-center"
+                            className="h-[200px] w-[200px] object-contain  object-center"
                           />
                           <div className="absolute top-2 right-2">
                             <Badge
