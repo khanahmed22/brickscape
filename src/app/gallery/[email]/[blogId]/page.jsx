@@ -50,6 +50,7 @@ export default function PropertyListingPage() {
   const [price, setPrice] = useState("")
   const [area, setArea] = useState("")
   const [location, setLocation] = useState("")
+  const [phoneNumber,setPhoneNumber]= useState("")
   const [purpose,setPurpose] = useState("")
   const [propertyType,setPropertyType] = useState("")
   const [bed, setBed] = useState("");
@@ -101,7 +102,7 @@ export default function PropertyListingPage() {
   }
 
   function CallSeller(){
-    window.open('tel:123123123', '_self')
+    window.open(`tel:${phoneNumber}`, "_self");
   }
 
  
@@ -164,6 +165,7 @@ export default function PropertyListingPage() {
       setBathroom(property.bathroom)
       setYear(property.year)
       setPropertyType(property.genre)
+      setPhoneNumber(property.phoneNumber)
     }
   }, [property])
 

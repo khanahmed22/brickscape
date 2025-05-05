@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState, useRef, useMemo, useEffect } from "react"
-import useSWR from "swr"
-import { useSession, useUser } from "@clerk/nextjs"
-import getSupabaseClient from "@/app/utils/supabase"
-import { useRouter, useParams } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { slugify } from "@/app/utils/slugify"
+import { useState, useRef, useMemo, useEffect } from "react";
+import useSWR from "swr";
+import { useSession, useUser } from "@clerk/nextjs";
+import getSupabaseClient from "@/app/utils/supabase";
+import { useRouter, useParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { slugify } from "@/app/utils/slugify";
 import {
   HomeIcon as House,
   Type,
@@ -39,9 +39,15 @@ import {
   Info,
   Hammer,
   Pyramid,
-} from "lucide-react"
-import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+} from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -51,213 +57,223 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { toast } from "sonner"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { WhatsappShareButton, WhatsappIcon } from "next-share"
-import { TwitterShareButton, TwitterIcon } from "next-share"
-import { FacebookShareButton, FacebookIcon } from "next-share"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { WhatsappShareButton, WhatsappIcon } from "next-share";
+import { TwitterShareButton, TwitterIcon } from "next-share";
+import { FacebookShareButton, FacebookIcon } from "next-share";
+import { usePathname } from "next/navigation";
 
 export default function PropertyListingPage() {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [price, setPrice] = useState("")
-  const [area, setArea] = useState("")
-  const [location, setLocation] = useState("")
-  const [purpose, setPurpose] = useState("")
-  const [blogContent, setBlogContent] = useState("")
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [area, setArea] = useState("");
+  const [location, setLocation] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [blogContent, setBlogContent] = useState("");
   const [bed, setBed] = useState("");
   const [bathroom, setBathroom] = useState("");
   const [year, setYear] = useState("");
-  const [fileURL, setFileURL] = useState("")
-  const [fileURLs, setFileURLs] = useState([])
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [existingFilePath, setExistingFilePath] = useState(null)
-  const [file, setFile] = useState(null)
-  const [uploading, setUploading] = useState(false)
-  const [editMode, setEditMode] = useState(false)
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [fileURL, setFileURL] = useState("");
+  const [fileURLs, setFileURLs] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [existingFilePath, setExistingFilePath] = useState(null);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
-  const [slug, setNewSlug] = useState(slugify(name))
-  const [contactName, setContactName] = useState("")
-  const [contactEmail, setContactEmail] = useState("")
-  const [contactMessage, setContactMessage] = useState("")
-  const [isSending, setIsSending] = useState(false)
+  const [slug, setNewSlug] = useState(slugify(name));
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-  const router = useRouter()
-  const { blogId: id } = useParams()
-  const { user } = useUser()
-  const { session } = useSession()
+  const router = useRouter();
+  const { blogId: id } = useParams();
+  const { user } = useUser();
+  const { session } = useSession();
 
-  const email = user?.primaryEmailAddress?.emailAddress || ""
-  const authorName = user?.firstName || "Property Owner"
-  const authorAvatar = user?.imageUrl
+  const email = user?.primaryEmailAddress?.emailAddress || "";
+  const authorName = user?.firstName || "Property Owner";
+  const authorAvatar = user?.imageUrl;
 
-  const [genre, setGenre] = useState("")
-  const pathname = usePathname()
-  const allowCopy = useRef(false) 
+  const [genre, setGenre] = useState("");
+  const pathname = usePathname();
+  const allowCopy = useRef(false);
 
- 
   const propertyFeatures = {
     bedrooms: bed,
     bathrooms: bathroom,
     year: year,
     propertyType: genre || "Residential",
-    
-  }
+  };
 
   function copyUrl() {
-    allowCopy.current = true // Allow the copy action
-    const el = document.createElement("input")
-    el.value = window.location.href
-    document.body.appendChild(el)
-    el.select()
-    document.execCommand("copy")
-    document.body.removeChild(el)
-    allowCopy.current = false // Reset the flag
-    toast.success("Listing URL copied to clipboard")
+    allowCopy.current = true; // Allow the copy action
+    const el = document.createElement("input");
+    el.value = window.location.href;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
+    allowCopy.current = false; // Reset the flag
+    toast.success("Listing URL copied to clipboard");
   }
 
-  function CallSeller(){
-    window.open('tel:123123123', '_self')
+  function CallSeller() {
+    window.open(`tel:${phoneNumber}`, "_self");
   }
 
-  
-
-  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isFullscreen) {
         if (e.key === "ArrowLeft") {
-          navigateImages("prev")
+          navigateImages("prev");
         } else if (e.key === "ArrowRight") {
-          navigateImages("next")
+          navigateImages("next");
         } else if (e.key === "Escape") {
-          setIsFullscreen(false)
+          setIsFullscreen(false);
         }
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isFullscreen, fileURLs, currentImageIndex])
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen, fileURLs, currentImageIndex]);
 
-  
   const {
     data: property,
     mutate,
     isLoading: isPropertyLoading,
     error: propertyError,
   } = useSWR(user && id ? ["slug", id] : null, async () => {
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
-    const { data, error } = await client.from("tasks").select().eq("slug", id).single()
-    if (error) throw error
-    return data
-  })
+    const clerkToken = await session?.getToken({ template: "supabase" });
+    const client = getSupabaseClient(clerkToken);
+    const { data, error } = await client
+      .from("tasks")
+      .select()
+      .eq("slug", id)
+      .single();
+    if (error) throw error;
+    return data;
+  });
 
   useMemo(() => {
     if (property) {
-      setName(property.name)
-      setDescription(property.description)
-      setBlogContent(property.blogContent)
-      setFileURL(property.fileURL)
-      
-      setFileURLs(property.fileURLs || (property.fileURL ? [property.fileURL] : []))
-      setGenre(property.genre || "")
-      setPrice(property.price)
-      setArea(property.area)
-      setLocation(property.location)
-      setPurpose(property.purpose)
-      setBed(property.bed)
-      setBathroom(property.bathroom)
-      setYear(property.year)
+      setName(property.name);
+      setDescription(property.description);
+      setBlogContent(property.blogContent);
+      setFileURL(property.fileURL);
+
+      setFileURLs(
+        property.fileURLs || (property.fileURL ? [property.fileURL] : [])
+      );
+      setGenre(property.genre || "");
+      setPrice(property.price);
+      setArea(property.area);
+      setLocation(property.location);
+      setPurpose(property.purpose);
+      setBed(property.bed);
+      setBathroom(property.bathroom);
+      setYear(property.year);
+      setPhoneNumber(property.phoneNumber);
     }
-  }, [property])
+  }, [property]);
 
   async function deleteProperty() {
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
+    const clerkToken = await session?.getToken({ template: "supabase" });
+    const client = getSupabaseClient(clerkToken);
 
     try {
+      await client.from("tasks").delete().eq("slug", id);
+      await client.from("all_tasks").delete().eq("slug", id);
 
-      await client.from("tasks").delete().eq("slug", id)
-      await client.from("all_tasks").delete().eq("slug", id)
-
-      mutate()
-      toast.success("Property listing deleted successfully")
-      router.push("/dashboard")
+      mutate();
+      toast.success("Property listing deleted successfully");
+      router.push("/dashboard");
     } catch (error) {
-      toast.error("Error deleting property: " + error.message)
+      toast.error("Error deleting property: " + error.message);
     }
   }
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0])
-  }
+    setFile(e.target.files[0]);
+  };
 
   const handleUpload = async () => {
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
+    const clerkToken = await session?.getToken({ template: "supabase" });
+    const client = getSupabaseClient(clerkToken);
 
     try {
-      setUploading(true)
+      setUploading(true);
 
       if (!file) {
-        toast.info("Please select a file to upload")
-        return
+        toast.info("Please select a file to upload");
+        return;
       }
 
-      const fileExt = file.name.split(".").pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = `${fileName}`
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
       if (existingFilePath) {
-        const { error: deleteError } = await client.storage.from("images").remove([existingFilePath])
+        const { error: deleteError } = await client.storage
+          .from("images")
+          .remove([existingFilePath]);
         if (deleteError) {
-          throw deleteError
+          throw deleteError;
         }
       }
 
-      const { data, error } = await client.storage.from("images").upload(filePath, file)
+      const { data, error } = await client.storage
+        .from("images")
+        .upload(filePath, file);
       if (error) {
-        throw error
+        throw error;
       }
 
-      const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(filePath)
+      const { data: publicUrlData, error: urlError } = client.storage
+        .from("images")
+        .getPublicUrl(filePath);
       if (urlError) {
-        throw urlError
+        throw urlError;
       }
 
-      const newFileURL = publicUrlData.publicUrl
-      setFileURL(newFileURL)
-      setFileURLs([...fileURLs, newFileURL])
-      setExistingFilePath(filePath)
+      const newFileURL = publicUrlData.publicUrl;
+      setFileURL(newFileURL);
+      setFileURLs([...fileURLs, newFileURL]);
+      setExistingFilePath(filePath);
 
-      toast.success("File uploaded successfully")
+      toast.success("File uploaded successfully");
     } catch (error) {
-      toast.error("Error uploading file: " + error.message)
+      toast.error("Error uploading file: " + error.message);
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
-
-  
+  };
 
   const createOrUpdateProperty = async (e) => {
-    e.preventDefault()
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
+    e.preventDefault();
+    const clerkToken = await session?.getToken({ template: "supabase" });
+    const client = getSupabaseClient(clerkToken);
 
     try {
       if (id) {
-     
         await client
           .from("tasks")
           .update({
@@ -270,15 +286,15 @@ export default function PropertyListingPage() {
             bed,
             bathroom,
             year,
+            phoneNumber,
             blogContent,
             fileURL,
             fileURLs,
             slug: slug,
             genre,
           })
-          .eq("slug", id)
+          .eq("slug", id);
 
-     
         await client
           .from("all_tasks")
           .update({
@@ -291,15 +307,15 @@ export default function PropertyListingPage() {
             bed,
             bathroom,
             year,
+            phoneNumber,
             blogContent,
             fileURL,
             fileURLs,
             slug: slug,
             genre,
           })
-          .eq("slug", id)
+          .eq("slug", id);
       } else {
-       
         const propertyData = {
           name,
           email,
@@ -311,99 +327,90 @@ export default function PropertyListingPage() {
           bed,
           bathroom,
           year,
+          phoneNumber,
           blogContent,
           fileURL,
           fileURLs,
           slug: slug,
           genre,
-        }
+        };
 
-        await client.from("tasks").insert(propertyData)
-        await client.from("all_tasks").insert(propertyData)
+        await client.from("tasks").insert(propertyData);
+        await client.from("all_tasks").insert(propertyData);
       }
-      mutate()
-      setFile(null)
-      toast.success("Property listing saved successfully")
-      setEditMode(false)
+      mutate();
+      setFile(null);
+      toast.success("Property listing saved successfully");
+      setEditMode(false);
 
-     
       if (!id || id !== slug) {
-        router.push(`/blog/${slug}`)
+        router.push(`/blog/${slug}`);
       }
 
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (error) {
-      toast.error("Error saving property: " + error.message)
+      toast.error("Error saving property: " + error.message);
     }
-  }
+  };
 
-
-  
-
-  
   const formatDate = (dateString) => {
-    if (!dateString) return "Unknown date"
-    const date = new Date(dateString)
+    if (!dateString) return "Unknown date";
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   const formatPrice = (price) => {
-    if (!price) return "Price on request"
+    if (!price) return "Price on request";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       maximumFractionDigits: 0,
-    }).format(price)
-  }
+    }).format(price);
+  };
 
   const formatArea = (area) => {
-    if (!area) return "Area not specified"
-    return `${area} sq ft`
-  }
+    if (!area) return "Area not specified";
+    return `${area} sq ft`;
+  };
 
   useEffect(() => {
-    setNewSlug(slugify(name))
-  }, [name])
-
-  
-  
-
+    setNewSlug(slugify(name));
+  }, [name]);
 
   const navigateImages = (direction) => {
-    if (!fileURLs || fileURLs.length <= 1) return
+    if (!fileURLs || fileURLs.length <= 1) return;
 
-    let newIndex
+    let newIndex;
     if (direction === "next") {
-      newIndex = (currentImageIndex + 1) % fileURLs.length
+      newIndex = (currentImageIndex + 1) % fileURLs.length;
     } else {
-      newIndex = (currentImageIndex - 1 + fileURLs.length) % fileURLs.length
+      newIndex = (currentImageIndex - 1 + fileURLs.length) % fileURLs.length;
     }
 
-    setCurrentImageIndex(newIndex)
-  }
+    setCurrentImageIndex(newIndex);
+  };
 
   // Toggle fullscreen mode
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen)
-  }
+    setIsFullscreen(!isFullscreen);
+  };
 
   const handleContactSubmit = (e) => {
-    e.preventDefault()
-    setIsSending(true)
+    e.preventDefault();
+    setIsSending(true);
 
-   
     setTimeout(() => {
-      toast.success("Your message has been sent to the seller")
-      setContactName("")
-      setContactEmail("")
-      setContactMessage("")
-      setIsSending(false)
-    }, 1500)
-  }
+      toast.success("Your message has been sent to the seller");
+      setContactName("");
+      setContactEmail("");
+      setContactMessage("");
+      setIsSending(false);
+    }, 1500);
+  };
 
   // Loading skeleton for the property view
   if (isPropertyLoading && !editMode) {
@@ -460,23 +467,26 @@ export default function PropertyListingPage() {
           </Card>
         </div>
       </div>
-    )
+    );
   }
-
 
   if (propertyError) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-xl text-destructive">Error Loading Property</CardTitle>
+            <CardTitle className="text-xl text-destructive">
+              Error Loading Property
+            </CardTitle>
             <CardDescription>
-              We couldn&apos;t load the property you requested. It may have been deleted or you may not have permission
-              to view it.
+              We couldn&apos;t load the property you requested. It may have been
+              deleted or you may not have permission to view it.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">Error details: {propertyError.message || "Unknown error"}</p>
+            <p className="text-sm text-muted-foreground">
+              Error details: {propertyError.message || "Unknown error"}
+            </p>
             <Button onClick={() => router.push("/dashboard")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Return to Dashboard
@@ -484,7 +494,7 @@ export default function PropertyListingPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!editMode) {
@@ -493,13 +503,18 @@ export default function PropertyListingPage() {
       <div className="min-h-screen bg-background">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="mb-6">
-            <Button variant="ghost" size="sm" className="mb-4" onClick={() => router.push("/dashboard")}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mb-4"
+              onClick={() => router.push("/dashboard")}
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
 
             <div className="mb-5 flex items-center justify-center gap-x-2 text-lg font-bold bg-secondary p-2 text-slate-700 dark:text-white rounded-lg">
-              <Info size={20}/> How buyers see your property 
+              <Info size={20} /> How buyers see your property
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -507,8 +522,13 @@ export default function PropertyListingPage() {
               <div className="lg:col-span-2">
                 {/* Property Title and Badge */}
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                  <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{name}</h1>
-                  <Badge variant="outline" className="mt-2 md:mt-0 px-3 py-1.5 text-sm">
+                  <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+                    {name}
+                  </h1>
+                  <Badge
+                    variant="outline"
+                    className="mt-2 md:mt-0 px-3 py-1.5 text-sm"
+                  >
                     {purpose || "For Sale"}
                   </Badge>
                 </div>
@@ -574,7 +594,9 @@ export default function PropertyListingPage() {
                           <div
                             key={index}
                             className={`relative aspect-square cursor-pointer rounded-md overflow-hidden border transition-all ${
-                              index === currentImageIndex ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-90"
+                              index === currentImageIndex
+                                ? "ring-2 ring-primary ring-offset-1"
+                                : "hover:opacity-90"
                             }`}
                             onClick={() => setCurrentImageIndex(index)}
                           >
@@ -596,21 +618,29 @@ export default function PropertyListingPage() {
                     <Bed className="h-5 w-5 mr-2 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">Bedrooms</p>
-                      <p className="font-medium">{propertyFeatures.bedrooms || "N/A"}</p>
+                      <p className="font-medium">
+                        {propertyFeatures.bedrooms || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center p-3 border rounded-md">
                     <Bath className="h-5 w-5 mr-2 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">Bathrooms</p>
-                      <p className="font-medium">{propertyFeatures.bathrooms || "N/A"}</p>
+                      <p className="font-medium">
+                        {propertyFeatures.bathrooms || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center p-3 border rounded-md">
                     <Hammer className="h-5 w-5 mr-2 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Year Built</p>
-                      <p className="font-medium">{propertyFeatures.year || "N/A"}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Year Built
+                      </p>
+                      <p className="font-medium">
+                        {propertyFeatures.year || "N/A"}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center p-3 border rounded-md">
@@ -623,7 +653,9 @@ export default function PropertyListingPage() {
                   <div className="flex items-center p-3 border rounded-md">
                     <Home className="h-5 w-5 mr-2 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Property Type</p>
+                      <p className="text-sm text-muted-foreground">
+                        Property Type
+                      </p>
                       <p className="font-medium">{genre || "Not specified"}</p>
                     </div>
                   </div>
@@ -631,7 +663,11 @@ export default function PropertyListingPage() {
                     <Calendar className="h-5 w-5 mr-2 text-primary" />
                     <div>
                       <p className="text-sm text-muted-foreground">Listed</p>
-                      <p className="font-medium">{property?.created_at ? formatDate(property.created_at) : "N/A"}</p>
+                      <p className="font-medium">
+                        {property?.created_at
+                          ? formatDate(property.created_at)
+                          : "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -639,7 +675,9 @@ export default function PropertyListingPage() {
                 {/* Description */}
                 <Card className="mb-8">
                   <CardHeader>
-                    <CardTitle className="text-xl">Property Description</CardTitle>
+                    <CardTitle className="text-xl">
+                      Property Description
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="prose prose-sm max-w-none dark:prose-invert">
@@ -650,14 +688,23 @@ export default function PropertyListingPage() {
 
                 {/* Admin Actions */}
                 <div className="flex items-center gap-2 mb-8">
-                  <Button variant="outline" size="sm" onClick={() => setEditMode(true)} aria-label="Edit property">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditMode(true)}
+                    aria-label="Edit property"
+                  >
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit Property
                   </Button>
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm" aria-label="Delete property">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        aria-label="Delete property"
+                      >
                         <Trash className="mr-2 h-4 w-4" />
                         Delete
                       </Button>
@@ -666,7 +713,8 @@ export default function PropertyListingPage() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete your property listing.
+                          This action cannot be undone. This will permanently
+                          delete your property listing.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -689,7 +737,10 @@ export default function PropertyListingPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-center gap-4">
-                      <FacebookShareButton url={`https://brickscape.vercel.app/${pathname}`} hashtag={"#realestate"}>
+                      <FacebookShareButton
+                        url={`https://brickscape.vercel.app/${pathname}`}
+                        hashtag={"#realestate"}
+                      >
                         <FacebookIcon size={32} round />
                       </FacebookShareButton>
 
@@ -727,28 +778,42 @@ export default function PropertyListingPage() {
                     <div className="flex items-center justify-between mb-4">
                       <div>
                         <p className="text-sm text-muted-foreground">Price</p>
-                        <p className="text-3xl font-bold">{formatPrice(price)}</p>
+                        <p className="text-3xl font-bold">
+                          {formatPrice(price)}
+                        </p>
                       </div>
-                      <Button variant="outline" size="icon" className="rounded-full">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full"
+                      >
                         <Heart className="h-5 w-5" />
                       </Button>
                     </div>
                     <Separator className="my-4" />
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Price per sq ft</span>
+                        <span className="text-muted-foreground">
+                          Price per sq ft
+                        </span>
                         <span className="font-medium">
-                          {price && area ? formatPrice(price / area) : "Not available"}
+                          {price && area
+                            ? formatPrice(price / area)
+                            : "Not available"}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Purpose</span>
-                        <span className="font-medium">{purpose || "Not specified"}</span>
+                        <span className="font-medium">
+                          {purpose || "Not specified"}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Listed on</span>
                         <span className="font-medium">
-                          {property?.created_at ? formatDate(property.created_at) : "N/A"}
+                          {property?.created_at
+                            ? formatDate(property.created_at)
+                            : "N/A"}
                         </span>
                       </div>
                     </div>
@@ -764,22 +829,34 @@ export default function PropertyListingPage() {
                     <div className="flex items-center mb-4">
                       <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
                         <img
-                          src={authorAvatar || "/placeholder.svg?height=48&width=48"}
+                          src={
+                            authorAvatar ||
+                            "/placeholder.svg?height=48&width=48"
+                          }
                           alt="Seller"
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div>
                         <p className="font-medium">{authorName}</p>
-                        <p className="text-sm text-muted-foreground">Property Owner</p>
+                        <p className="text-sm text-muted-foreground">
+                          Property Owner
+                        </p>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <Button variant="outline" onClick={()=>CallSeller()} className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        onClick={() => CallSeller()}
+                        className="w-full justify-start"
+                      >
                         <Phone className="mr-2 h-4 w-4" />
                         Contact Seller
                       </Button>
-                      <Button variant="outline" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
                         <User className="mr-2 h-4 w-4" />
                         View Profile
                       </Button>
@@ -791,7 +868,9 @@ export default function PropertyListingPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">Send a Message</CardTitle>
-                    <CardDescription>Interested in this property? Send a message to the seller.</CardDescription>
+                    <CardDescription>
+                      Interested in this property? Send a message to the seller.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleContactSubmit} className="space-y-4">
@@ -821,7 +900,10 @@ export default function PropertyListingPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label htmlFor="message" className="text-sm font-medium">
+                        <label
+                          htmlFor="message"
+                          className="text-sm font-medium"
+                        >
                           Message
                         </label>
                         <Textarea
@@ -833,7 +915,11 @@ export default function PropertyListingPage() {
                           required
                         />
                       </div>
-                      <Button type="submit" className="w-full" disabled={isSending}>
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isSending}
+                      >
                         {isSending ? (
                           <>Sending...</>
                         ) : (
@@ -896,7 +982,7 @@ export default function PropertyListingPage() {
           </div>
         )}
       </div>
-    )
+    );
   } else {
     // Edit Mode - Loading skeleton for edit mode
     if (isPropertyLoading) {
@@ -972,7 +1058,7 @@ export default function PropertyListingPage() {
             </div>
           </div>
         </motion.div>
-      )
+      );
     }
 
     // Edit Mode
@@ -989,10 +1075,13 @@ export default function PropertyListingPage() {
             <div className="max-w-5xl mx-auto">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight">Edit Property</h1>
-                  <p className="text-muted-foreground mt-1">Make changes to your property listing</p>
+                  <h1 className="text-3xl font-bold tracking-tight">
+                    Edit Property
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    Make changes to your property listing
+                  </p>
                 </div>
-                
               </div>
 
               <form onSubmit={createOrUpdateProperty}>
@@ -1011,11 +1100,16 @@ export default function PropertyListingPage() {
                   <TabsContent value="content" className="space-y-6">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-xl">Property Details</CardTitle>
+                        <CardTitle className="text-xl">
+                          Property Details
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
-                          <label htmlFor="purpose" className="text-sm font-medium">
+                          <label
+                            htmlFor="purpose"
+                            className="text-sm font-medium"
+                          >
                             <Pyramid className="w-4 h-4 inline mr-2" />
                             Select Purpose
                           </label>
@@ -1024,14 +1118,19 @@ export default function PropertyListingPage() {
                               <SelectValue placeholder="Select your Purpose" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                              <SelectItem value="uncategorized">
+                                Uncategorized
+                              </SelectItem>
                               <SelectItem value="Rent">Rent</SelectItem>
                               <SelectItem value="Sell">Sell</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <div className="space-y-2">
-                          <label htmlFor="title" className="text-sm font-medium">
+                          <label
+                            htmlFor="title"
+                            className="text-sm font-medium"
+                          >
                             <Type className="w-4 h-4 inline mr-2" />
                             Property Title
                           </label>
@@ -1047,7 +1146,10 @@ export default function PropertyListingPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <label htmlFor="description" className="text-sm font-medium">
+                          <label
+                            htmlFor="description"
+                            className="text-sm font-medium"
+                          >
                             <FileText className="w-4 h-4 inline mr-2" />
                             Description
                           </label>
@@ -1062,7 +1164,10 @@ export default function PropertyListingPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <label htmlFor="location" className="text-sm font-medium">
+                          <label
+                            htmlFor="location"
+                            className="text-sm font-medium"
+                          >
                             <MapPin className="w-4 h-4 inline mr-2" />
                             Location
                           </label>
@@ -1077,7 +1182,10 @@ export default function PropertyListingPage() {
                         </div>
 
                         <div className="space-y-2">
-                          <label htmlFor="genre" className="text-sm font-medium">
+                          <label
+                            htmlFor="genre"
+                            className="text-sm font-medium"
+                          >
                             <Home className="w-4 h-4 inline mr-2" />
                             Property Type
                           </label>
@@ -1087,12 +1195,18 @@ export default function PropertyListingPage() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="House">House</SelectItem>
-                              <SelectItem value="Apartment">Apartment</SelectItem>
+                              <SelectItem value="Apartment">
+                                Apartment
+                              </SelectItem>
                               <SelectItem value="Condo">Condo</SelectItem>
-                              <SelectItem value="Townhouse">Townhouse</SelectItem>
+                              <SelectItem value="Townhouse">
+                                Townhouse
+                              </SelectItem>
                               <SelectItem value="Villa">Villa</SelectItem>
                               <SelectItem value="Land">Land</SelectItem>
-                              <SelectItem value="Commercial">Commercial</SelectItem>
+                              <SelectItem value="Commercial">
+                                Commercial
+                              </SelectItem>
                               <SelectItem value="Other">Other</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1100,7 +1214,10 @@ export default function PropertyListingPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <label htmlFor="price" className="text-sm font-medium">
+                            <label
+                              htmlFor="price"
+                              className="text-sm font-medium"
+                            >
                               <DollarSign className="w-4 h-4 inline mr-2" />
                               Price
                             </label>
@@ -1115,7 +1232,10 @@ export default function PropertyListingPage() {
                             />
                           </div>
                           <div className="space-y-2">
-                            <label htmlFor="area" className="text-sm font-medium">
+                            <label
+                              htmlFor="area"
+                              className="text-sm font-medium"
+                            >
                               <SquareDashedBottom className="w-4 h-4 inline mr-2" />
                               Area (sq ft)
                             </label>
@@ -1132,72 +1252,86 @@ export default function PropertyListingPage() {
                           </div>
 
                           <div className="flex gap-x-5">
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="bed"
-                        className="text-sm font-medium items-center"
-                      >
-                        <Bed className="w-4 h-4 inline mr-2" />
-                        No. of Beds
-                      </label>
-                      <Input
-                        id="bed"
-                        autoFocus
-                        type="number"
-                        placeholder="How many beds?"
-                        onChange={(e) => setBed(e.target.value)}
-                        value={bed}
-                        required
-                        className="h-12"
-                        aria-label="bed"
-                      />
-                    </div>
+                            <div className="space-y-2">
+                              <label
+                                htmlFor="bed"
+                                className="text-sm font-medium items-center"
+                              >
+                                <Bed className="w-4 h-4 inline mr-2" />
+                                No. of Beds
+                              </label>
+                              <Input
+                                id="bed"
+                                autoFocus
+                                type="number"
+                                placeholder="How many beds?"
+                                onChange={(e) => setBed(e.target.value)}
+                                value={bed}
+                                required
+                                className="h-12"
+                                aria-label="bed"
+                              />
+                            </div>
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="bed"
-                        className="text-sm font-medium items-center"
-                      >
-                        <ShowerHead className="w-4 h-4 inline mr-2" />
-                        No. of Bathrooms
-                      </label>
-                      <Input
-                        id="bathroom"
-                        autoFocus
-                        type="number"
-                        placeholder="How many bathrooms?"
-                        onChange={(e) => setBathroom(e.target.value)}
-                        value={bathroom}
-                        required
-                        className="h-12"
-                        aria-label="bathroom"
-                      />
-                    </div>
+                            <div className="space-y-2">
+                              <label
+                                htmlFor="bed"
+                                className="text-sm font-medium items-center"
+                              >
+                                <ShowerHead className="w-4 h-4 inline mr-2" />
+                                No. of Bathrooms
+                              </label>
+                              <Input
+                                id="bathroom"
+                                autoFocus
+                                type="number"
+                                placeholder="How many bathrooms?"
+                                onChange={(e) => setBathroom(e.target.value)}
+                                value={bathroom}
+                                required
+                                className="h-12"
+                                aria-label="bathroom"
+                              />
+                            </div>
 
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="bed"
-                        className="text-sm font-medium items-center"
-                      >
-                        <Hammer className="w-4 h-4 inline mr-2" />
-                        Year Built
-                      </label>
-                      <Input
-                        id="yearBuilt"
-                        autoFocus
-                        type="number"
-                        placeholder="When was it built?"
-                        onChange={(e) => setYear(e.target.value)}
-                        value={year}
-                        required
-                        className="h-12"
-                        aria-label="year built"
-                      />
-                    </div>
+                            <div className="space-y-2">
+                              <label
+                                htmlFor="bed"
+                                className="text-sm font-medium items-center"
+                              >
+                                <Hammer className="w-4 h-4 inline mr-2" />
+                                Year Built
+                              </label>
+                              <Input
+                                id="yearBuilt"
+                                autoFocus
+                                type="number"
+                                placeholder="When was it built?"
+                                onChange={(e) => setYear(e.target.value)}
+                                value={year}
+                                required
+                                className="h-12"
+                                aria-label="year built"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                    <label htmlFor="phoneNumber" className="text-sm font-medium">
+                      <Phone className="w-4 h-4 inline mr-2" />
+                      Seller Phone Number
+                    </label>
+                    <Input
+                      id="phoneNumber"
+                      type="number"
+                      placeholder="Enter Phone number"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      value={phoneNumber}
+                      required
+                      className="h-12"
+                      aria-label="phone number"
+                    />
                   </div>
                         </div>
-
-                        
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -1205,16 +1339,25 @@ export default function PropertyListingPage() {
                   <TabsContent value="media">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-xl">Property Images</CardTitle>
-                        <CardDescription>Upload high-quality images of your property</CardDescription>
+                        <CardTitle className="text-xl">
+                          Property Images
+                        </CardTitle>
+                        <CardDescription>
+                          Upload high-quality images of your property
+                        </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-6">
                           <div className="space-y-4">
-                            <h3 className="text-sm font-medium">Upload Your Own Image</h3>
+                            <h3 className="text-sm font-medium">
+                              Upload Your Own Image
+                            </h3>
                             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                               <div className="flex-1">
-                                <label htmlFor="image-upload" className="text-sm font-medium block mb-2">
+                                <label
+                                  htmlFor="image-upload"
+                                  className="text-sm font-medium block mb-2"
+                                >
                                   Upload Image (Max: 50MB)
                                 </label>
                                 <Input
@@ -1246,13 +1389,17 @@ export default function PropertyListingPage() {
 
                           {fileURLs && fileURLs.length > 0 && (
                             <div className="mt-8 border-t pt-6">
-                              <h3 className="text-sm font-medium mb-4">Uploaded Images</h3>
+                              <h3 className="text-sm font-medium mb-4">
+                                Uploaded Images
+                              </h3>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {fileURLs.map((url, index) => (
                                   <div
                                     key={index}
                                     className={`relative rounded-md overflow-hidden border cursor-pointer transition-all ${
-                                      url === fileURL ? "ring-2 ring-primary ring-offset-2" : "hover:opacity-90"
+                                      url === fileURL
+                                        ? "ring-2 ring-primary ring-offset-2"
+                                        : "hover:opacity-90"
                                     }`}
                                     onClick={() => setFileURL(url)}
                                   >
@@ -1263,7 +1410,10 @@ export default function PropertyListingPage() {
                                     />
                                     {url === fileURL && (
                                       <div className="absolute top-2 right-2">
-                                        <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
+                                        <Badge
+                                          variant="secondary"
+                                          className="bg-background/80 backdrop-blur-sm"
+                                        >
                                           <CheckCircle2 className="w-3 h-3 mr-1 text-primary" />
                                           Cover Image
                                         </Badge>
@@ -1281,12 +1431,28 @@ export default function PropertyListingPage() {
                 </Tabs>
 
                 <div className="flex items-center justify-between mt-6">
-                  <Button type="button" variant="outline" onClick={() => setEditMode(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setEditMode(false)}
+                  >
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Cancel
                   </Button>
 
-                  <Button type="submit" disabled={!name || !description || !price || !purpose || !bed || !bathroom || !year}>
+                  <Button
+                    type="submit"
+                    disabled={
+                      !name ||
+                      !description ||
+                      !price ||
+                      !purpose ||
+                      !bed ||
+                      !bathroom ||
+                      !year ||
+                      !phoneNumber
+                    }
+                  >
                     <Save className="mr-2 h-4 w-4" />
                     Save Changes
                   </Button>
@@ -1296,6 +1462,6 @@ export default function PropertyListingPage() {
           </div>
         </div>
       </motion.div>
-    )
+    );
   }
 }

@@ -58,6 +58,7 @@ export default function PropertyMakerClient() {
   const [bed, setBed] = useState("");
   const [bathroom, setBathroom] = useState("");
   const [year, setYear] = useState("");
+  const [phoneNumber,setPhoneNumber] = useState("")
   const [blogContent, setBlogContent] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [slug, setSlug] = useState("");
@@ -117,6 +118,7 @@ export default function PropertyMakerClient() {
             year,
             blogContent,
             location,
+            phoneNumber,
             fileURL: coverImageURL,
             fileURLs,
             slug,
@@ -138,6 +140,7 @@ export default function PropertyMakerClient() {
                   bed,
                   bathroom,
                   year,
+                  phoneNumber,
                   blogContent,
                   fileURL: coverImageURL,
                   fileURLs,
@@ -162,6 +165,7 @@ export default function PropertyMakerClient() {
           price,
           area,
           location,
+          phoneNumber,
           blogContent,
           fileURL: coverImageURL,
           fileURLs,
@@ -202,6 +206,7 @@ export default function PropertyMakerClient() {
       setBed("");
       setBathroom("");
       setYear("");
+      setPhoneNumber("")
 
       toast.success("Blog published successfully");
       router.push("/dashboard");
@@ -505,19 +510,19 @@ export default function PropertyMakerClient() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="location" className="text-sm font-medium">
+                    <label htmlFor="phoneNumber" className="text-sm font-medium">
                       <Phone className="w-4 h-4 inline mr-2" />
-                      Phone Number
+                      Seller Phone Number
                     </label>
                     <Input
-                      id="location"
-                      type="text"
-                      placeholder="Enter location of your property"
-                      onChange={(e) => setLocation(e.target.value)}
-                      value={location}
+                      id="phoneNumber"
+                      type="number"
+                      placeholder="Enter Phone number"
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      value={phoneNumber}
                       required
                       className="h-12"
-                      aria-label="LOCATION"
+                      aria-label="phone number"
                     />
                   </div>
                 </CardContent>
@@ -542,7 +547,8 @@ export default function PropertyMakerClient() {
                         !purpose ||
                         !bed ||
                         !bathroom ||
-                        !year
+                        !year ||
+                        !phoneNumber
                       }
                     >
                       <Send className="w-4 h-4 mr-2" />
