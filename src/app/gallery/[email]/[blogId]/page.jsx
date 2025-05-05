@@ -100,6 +100,10 @@ export default function PropertyListingPage() {
     toast.success("Listing URL copied to clipboard")
   }
 
+  function CallSeller(){
+    window.open('tel:123123123', '_self')
+  }
+
  
 
  
@@ -554,7 +558,7 @@ export default function PropertyListingPage() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
+                    <Button variant="outline" onClick={()=>CallSeller()} className="w-full justify-start">
                       <Phone className="mr-2 h-4 w-4" />
                       Contact Seller
                     </Button>
