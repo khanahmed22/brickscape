@@ -760,7 +760,7 @@ export default function PropertySearchPage() {
                       <Separator className="mb-2 mt-2" />
 
                       <p className=" line-clamp-2 font-bold text-lg">
-                        $ {property.price}
+                         {formatPrice(property.price)}
                       </p>
                     </CardContent>
                     <CardFooter className="pt-0 pb-4">
