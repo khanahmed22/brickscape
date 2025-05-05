@@ -31,9 +31,10 @@ import {
   Bed,
   Bath,
   Car,
+  Hammer,
+  House,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { useSupabaseData } from "@/app/utils/SupabaseContext"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
@@ -50,6 +51,10 @@ export default function PropertyListingPage() {
   const [area, setArea] = useState("")
   const [location, setLocation] = useState("")
   const [purpose,setPurpose] = useState("")
+  const [propertyType,setPropertyType] = useState("")
+  const [bed, setBed] = useState("");
+  const [bathroom, setBathroom] = useState("");
+  const [year, setYear] = useState("");
   const [blogContent, setBlogContent] = useState("")
   const [fileURL, setFileURL] = useState("")
   const [fileURLs, setFileURLs] = useState([])
@@ -61,13 +66,12 @@ export default function PropertyListingPage() {
   const [contactEmail, setContactEmail] = useState("")
   const [contactMessage, setContactMessage] = useState("")
   const [isSending, setIsSending] = useState(false)
+  
 
   const router = useRouter()
   const { blogId: id } = useParams()
   const { user } = useUser()
   const { session } = useSession()
-
-  const [actionType, setActionType] = useState(null)
   const authorName = user?.firstName
 
 
@@ -77,12 +81,11 @@ export default function PropertyListingPage() {
 
 
   const propertyFeatures = {
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 1,
-    yearBuilt: 2018,
-    propertyType: "House",
-    furnished: "Partially",
+    bedrooms: bed,
+    bathrooms: bathroom,
+    propertyType: propertyType,
+    yearBuilt: year,
+   
   }
 
   function copyUrl() {
@@ -145,7 +148,7 @@ export default function PropertyListingPage() {
       setDescription(property.description)
       setBlogContent(property.blogContent)
       setFileURL(property.fileURL)
-     
+      
       setFileURLs(property.fileURLs || (property.fileURL ? [property.fileURL] : []))
       setAuthorEmail(property.email)
       setAuthorAvatar(property.authorAvatar)
@@ -153,6 +156,10 @@ export default function PropertyListingPage() {
       setArea(property.area)
       setLocation(property.location || "Not specified")
       setPurpose(property.purpose)
+      setBed(property.bed)
+      setBathroom(property.bathroom)
+      setYear(property.year)
+      setPropertyType(property.genre)
     }
   }, [property])
 
@@ -414,12 +421,13 @@ export default function PropertyListingPage() {
                   </div>
                 </div>
                 <div className="flex items-center p-3 border rounded-md">
-                  <Car className="h-5 w-5 mr-2 text-primary" />
+                  <Hammer className="h-5 w-5 mr-2 text-primary" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Parking</p>
-                    <p className="font-medium">{propertyFeatures.parking || "N/A"}</p>
+                    <p className="text-sm text-muted-foreground">Year Built</p>
+                    <p className="font-medium">{propertyFeatures.yearBuilt || "N/A"}</p>
                   </div>
                 </div>
+                
                 <div className="flex items-center p-3 border rounded-md">
                   <SquareFootIcon className="h-5 w-5 mr-2 text-primary" />
                   <div>
@@ -428,12 +436,13 @@ export default function PropertyListingPage() {
                   </div>
                 </div>
                 <div className="flex items-center p-3 border rounded-md">
-                  <Home className="h-5 w-5 mr-2 text-primary" />
+                  <House className="h-5 w-5 mr-2 text-primary" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Year Built</p>
-                    <p className="font-medium">{propertyFeatures.yearBuilt || "N/A"}</p>
+                    <p className="text-sm text-muted-foreground">Property Type</p>
+                    <p className="font-medium">{propertyFeatures.propertyType || "N/A"}</p>
                   </div>
                 </div>
+                
                 <div className="flex items-center p-3 border rounded-md">
                   <Calendar className="h-5 w-5 mr-2 text-primary" />
                   <div>
@@ -465,18 +474,18 @@ export default function PropertyListingPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-center gap-4">
-                    <FacebookShareButton url={`https://property-listings.com${pathname}`} hashtag={"#realestate"}>
+                    <FacebookShareButton url={`https://brickscape.vercel.app/${pathname}`} hashtag={"#realestate"}>
                       <FacebookIcon size={32} round />
                     </FacebookShareButton>
 
                     <TwitterShareButton
-                      url={`https://property-listings.com${pathname}`}
+                      url={`https://brickscape.vercel.app/${pathname}`}
                       title={`Check out this property: ${name}`}
                     >
                       <TwitterIcon size={32} round />
                     </TwitterShareButton>
                     <WhatsappShareButton
-                      url={`https://property-listings.com${pathname}`}
+                      url={`https://brickscape.vercel.app/${pathname}`}
                       title={`Check out this property: ${name}`}
                       separator=" - "
                     >
@@ -516,10 +525,7 @@ export default function PropertyListingPage() {
                       <span className="text-muted-foreground">Price per sq ft</span>
                       <span className="font-medium">{price && area ? formatPrice(price / area) : "Not available"}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Furnished</span>
-                      <span className="font-medium">{propertyFeatures.furnished || "No"}</span>
-                    </div>
+                    
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Purpose</span>
                       <span className="font-medium">{purpose}</span>

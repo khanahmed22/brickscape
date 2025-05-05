@@ -12,7 +12,7 @@ import {
   HomeIcon as House,
   Type,
   DollarSign,
-  Sparkles,
+  ShowerHead,
   SquareDashedBottom,
   ChevronLeft,
   ChevronRight,
@@ -32,13 +32,12 @@ import {
   Home,
   Bed,
   Bath,
-  Car,
   Heart,
   Phone,
   MessageSquare,
   User,
-  Eye,
   Info,
+  Hammer,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -53,7 +52,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
-import { useSupabaseData } from "@/app/utils/SupabaseContext"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -73,6 +71,9 @@ export default function PropertyListingPage() {
   const [location, setLocation] = useState("")
   const [purpose, setPurpose] = useState("")
   const [blogContent, setBlogContent] = useState("")
+  const [bed, setBed] = useState("");
+  const [bathroom, setBathroom] = useState("");
+  const [year, setYear] = useState("");
   const [fileURL, setFileURL] = useState("")
   const [fileURLs, setFileURLs] = useState([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -81,7 +82,7 @@ export default function PropertyListingPage() {
   const [file, setFile] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [editMode, setEditMode] = useState(false)
-  const [loading, setLoading] = useState(false)
+
   const [slug, setNewSlug] = useState(slugify(name))
   const [contactName, setContactName] = useState("")
   const [contactEmail, setContactEmail] = useState("")
@@ -97,26 +98,17 @@ export default function PropertyListingPage() {
   const authorName = user?.firstName || "Property Owner"
   const authorAvatar = user?.imageUrl
 
-  const [actionType, setActionType] = useState(null)
-
- 
-
-  const [prompt, setPrompt] = useState("adorable pig")
-  const [imageSrc, setImageSrc] = useState(null)
-  const [generatingImage, setGeneratingImage] = useState(false)
-  const [imageError, setImageError] = useState(null)
   const [genre, setGenre] = useState("")
   const pathname = usePathname()
   const allowCopy = useRef(false) 
 
  
   const propertyFeatures = {
-    bedrooms: 3,
-    bathrooms: 2,
-    parking: 1,
-    yearBuilt: 2020,
+    bedrooms: bed,
+    bathrooms: bathroom,
+    year: year,
     propertyType: genre || "Residential",
-    furnished: "Partially",
+    
   }
 
   function copyUrl() {
@@ -178,6 +170,9 @@ export default function PropertyListingPage() {
       setArea(property.area)
       setLocation(property.location)
       setPurpose(property.purpose)
+      setBed(property.bed)
+      setBathroom(property.bathroom)
+      setYear(property.year)
     }
   }, [property])
 
@@ -267,6 +262,9 @@ export default function PropertyListingPage() {
             area,
             location,
             purpose,
+            bed,
+            bathroom,
+            year,
             blogContent,
             fileURL,
             fileURLs,
@@ -285,6 +283,9 @@ export default function PropertyListingPage() {
             area,
             location,
             purpose,
+            bed,
+            bathroom,
+            year,
             blogContent,
             fileURL,
             fileURLs,
@@ -302,6 +303,9 @@ export default function PropertyListingPage() {
           price,
           area,
           purpose,
+          bed,
+          bathroom,
+          year,
           blogContent,
           fileURL,
           fileURLs,
@@ -598,10 +602,10 @@ export default function PropertyListingPage() {
                     </div>
                   </div>
                   <div className="flex items-center p-3 border rounded-md">
-                    <Car className="h-5 w-5 mr-2 text-primary" />
+                    <Hammer className="h-5 w-5 mr-2 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Parking</p>
-                      <p className="font-medium">{propertyFeatures.parking || "N/A"}</p>
+                      <p className="text-sm text-muted-foreground">Year Built</p>
+                      <p className="font-medium">{propertyFeatures.year || "N/A"}</p>
                     </div>
                   </div>
                   <div className="flex items-center p-3 border rounded-md">
@@ -680,18 +684,18 @@ export default function PropertyListingPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-center gap-4">
-                      <FacebookShareButton url={`https://property-listings.com${pathname}`} hashtag={"#realestate"}>
+                      <FacebookShareButton url={`https://brickscape.vercel.app/${pathname}`} hashtag={"#realestate"}>
                         <FacebookIcon size={32} round />
                       </FacebookShareButton>
 
                       <TwitterShareButton
-                        url={`https://property-listings.com${pathname}`}
+                        url={`https://brickscape.vercel.app/${pathname}`}
                         title={`Check out this property: ${name}`}
                       >
                         <TwitterIcon size={32} round />
                       </TwitterShareButton>
                       <WhatsappShareButton
-                        url={`https://property-listings.com${pathname}`}
+                        url={`https://brickscape.vercel.app/${pathname}`}
                         title={`Check out this property: ${name}`}
                         separator=" - "
                       >
@@ -1121,6 +1125,71 @@ export default function PropertyListingPage() {
                               aria-label="Area"
                             />
                           </div>
+
+                          <div className="flex gap-x-5">
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bed"
+                        className="text-sm font-medium items-center"
+                      >
+                        <Bed className="w-4 h-4 inline mr-2" />
+                        No. of Beds
+                      </label>
+                      <Input
+                        id="bed"
+                        autoFocus
+                        type="number"
+                        placeholder="How many beds?"
+                        onChange={(e) => setBed(e.target.value)}
+                        value={bed}
+                        required
+                        className="h-12"
+                        aria-label="bed"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bed"
+                        className="text-sm font-medium items-center"
+                      >
+                        <ShowerHead className="w-4 h-4 inline mr-2" />
+                        No. of Bathrooms
+                      </label>
+                      <Input
+                        id="bathroom"
+                        autoFocus
+                        type="number"
+                        placeholder="How many bathrooms?"
+                        onChange={(e) => setBathroom(e.target.value)}
+                        value={bathroom}
+                        required
+                        className="h-12"
+                        aria-label="bathroom"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bed"
+                        className="text-sm font-medium items-center"
+                      >
+                        <Bed className="w-4 h-4 inline mr-2" />
+                        Year Built
+                      </label>
+                      <Input
+                        id="yearBuilt"
+                        autoFocus
+                        type="number"
+                        placeholder="How many beds?"
+                        onChange={(e) => setYear(e.target.value)}
+                        value={year}
+                        required
+                        className="h-12"
+                        aria-label="year built"
+                      />
+                    </div>
+                  </div>
                         </div>
 
                         
@@ -1212,7 +1281,7 @@ export default function PropertyListingPage() {
                     Cancel
                   </Button>
 
-                  <Button type="submit" disabled={!name || !description || !price || !purpose}>
+                  <Button type="submit" disabled={!name || !description || !price || !purpose || !bed || !bathroom || !year}>
                     <Save className="mr-2 h-4 w-4" />
                     Save Changes
                   </Button>

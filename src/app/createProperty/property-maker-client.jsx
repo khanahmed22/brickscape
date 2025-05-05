@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import dynamic from "next/dynamic"
-import { useSession, useUser } from "@clerk/nextjs"
-import getSupabaseClient from "@/app/utils/supabase"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { useSession, useUser } from "@clerk/nextjs";
+import getSupabaseClient from "@/app/utils/supabase";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   DollarSign,
   ImageUp,
@@ -18,81 +18,87 @@ import {
   Send,
   SquareDashedBottom,
   MapPin,
-  House
-} from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { slugify } from "@/app/utils/slugify"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
+  House,
+  Bed,
+  ShowerHead,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { slugify } from "@/app/utils/slugify";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
   loading: () => (
-    <div className="h-[400px] border rounded-md bg-muted/20 flex items-center justify-center">Loading editor...</div>
+    <div className="h-[400px] border rounded-md bg-muted/20 flex items-center justify-center">
+      Loading editor...
+    </div>
   ),
-})
+});
 
 export default function PropertyMakerClient() {
-  const [tasks, setTasks] = useState([])
-  const [isLoading, setLoading] = useState(false)
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [price, setPrice] = useState("")
-  const [area, setArea] = useState("")
-  const [location,setLocation] = useState("")
-  const [purpose,setPurpose] = useState("")
-  const [blogContent, setBlogContent] = useState("")
-  const [editingTaskId, setEditingTaskId] = useState(null)
-  const [slug, setSlug] = useState("")
-  const [genre, setGenre] = useState("")
-  const { user } = useUser()
-  const { session } = useSession()
-  
-  const router = useRouter()
-  const [files, setFiles] = useState([])
-  const [uploading, setUploading] = useState(false)
-  const [publishing, setPublishing] = useState(false)
-  const [fileURLs, setFileURLs] = useState([])
-  const [coverImageURL, setCoverImageURL] = useState("")
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [area, setArea] = useState("");
+  const [location, setLocation] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [bed, setBed] = useState("");
+  const [bathroom, setBathroom] = useState("");
+  const [year, setYear] = useState("");
+  const [blogContent, setBlogContent] = useState("");
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [slug, setSlug] = useState("");
+  const [genre, setGenre] = useState("");
+  const { user } = useUser();
+  const { session } = useSession();
 
+  const router = useRouter();
+  const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [fileURLs, setFileURLs] = useState([]);
+  const [coverImageURL, setCoverImageURL] = useState("");
 
-  const email = user?.primaryEmailAddress?.emailAddress || ""
-  const authorName = user?.firstName
-  const authorAvatar = user?.imageUrl
-
+  const email = user?.primaryEmailAddress?.emailAddress || "";
+  const authorName = user?.firstName;
+  const authorAvatar = user?.imageUrl;
 
   useEffect(() => {
-    if (!user) return
+    if (!user) return;
 
     async function loadTasks() {
-      setLoading(true)
-      const clerkToken = await session?.getToken({ template: "supabase" })
-      const client = getSupabaseClient(clerkToken)
-      const { data, error } = await client.from("tasks").select()
-      if (!error) setTasks(data)
-      setLoading(false)
+      setLoading(true);
+      const clerkToken = await session?.getToken({ template: "supabase" });
+      const client = getSupabaseClient(clerkToken);
+      const { data, error } = await client.from("tasks").select();
+      if (!error) setTasks(data);
+      setLoading(false);
     }
 
-    loadTasks()
-  }, [user, session])
+    loadTasks();
+  }, [user, session]);
 
-  
   useEffect(() => {
-    setSlug(slugify(name))
-  }, [name])
-
-  
-
+    setSlug(slugify(name));
+  }, [name]);
 
   async function createTask(e) {
-    e.preventDefault()
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
+    e.preventDefault();
+    const clerkToken = await session?.getToken({ template: "supabase" });
+    const client = getSupabaseClient(clerkToken);
 
     try {
-      setPublishing(true)
+      setPublishing(true);
 
       if (editingTaskId) {
         await client
@@ -103,6 +109,9 @@ export default function PropertyMakerClient() {
             price,
             area,
             purpose,
+            bed,
+            bathroom,
+            year,
             blogContent,
             location,
             fileURL: coverImageURL,
@@ -110,18 +119,33 @@ export default function PropertyMakerClient() {
             slug,
             genre,
           })
-          .eq("id", editingTaskId)
+          .eq("id", editingTaskId);
 
         setTasks(
           tasks.map((task) =>
             task.id === editingTaskId
-              ? { ...task, name, description, price, area,location, purpose,blogContent, fileURL: coverImageURL, fileURLs, slug, genre }
-              : task,
-          ),
-        )
-        setEditingTaskId(null)
+              ? {
+                  ...task,
+                  name,
+                  description,
+                  price,
+                  area,
+                  location,
+                  purpose,
+                  bed,
+                  bathroom,
+                  year,
+                  blogContent,
+                  fileURL: coverImageURL,
+                  fileURLs,
+                  slug,
+                  genre,
+                }
+              : task
+          )
+        );
+        setEditingTaskId(null);
       } else {
-      
         const blogData = {
           name,
           email,
@@ -129,6 +153,9 @@ export default function PropertyMakerClient() {
           authorAvatar,
           description,
           purpose,
+          bed,
+          bathroom,
+          year,
           price,
           area,
           location,
@@ -137,105 +164,113 @@ export default function PropertyMakerClient() {
           fileURLs,
           slug,
           genre,
-        }
+        };
 
-    
-        const { data, error } = await client.from("tasks").insert(blogData).select()
+        const { data, error } = await client
+          .from("tasks")
+          .insert(blogData)
+          .select();
 
-        if (error) throw error
+        if (error) throw error;
 
-  
-        const { error: allTasksError } = await client.from("all_tasks").insert(blogData)
+        const { error: allTasksError } = await client
+          .from("all_tasks")
+          .insert(blogData);
 
         if (allTasksError) {
-          console.error("Error inserting into all_tasks:", allTasksError)
-          toast.warning("Property saved to tasks but failed to save to all_tasks")
+          console.error("Error inserting into all_tasks:", allTasksError);
+          toast.warning(
+            "Property saved to tasks but failed to save to all_tasks"
+          );
         }
       }
 
-      setName("")
-      setDescription("")
-      setBlogContent("")
-      setFileURLs([])
-      setCoverImageURL("")
-      setSlug("")
-      setGenre("")
-      setPrice("")
-      setArea("")
-      setLocation("")
-      setPurpose("")
+      setName("");
+      setDescription("");
+      setBlogContent("");
+      setFileURLs([]);
+      setCoverImageURL("");
+      setSlug("");
+      setGenre("");
+      setPrice("");
+      setArea("");
+      setLocation("");
+      setPurpose("");
+      setBed("");
+      setBathroom("");
+      setYear("");
 
-      toast.success("Blog published successfully")
-      router.push("/dashboard")
+      toast.success("Blog published successfully");
+      router.push("/dashboard");
     } catch (error) {
-      toast.error("Error publishing blog: " + error.message)
+      toast.error("Error publishing blog: " + error.message);
     } finally {
-      setPublishing(false)
+      setPublishing(false);
     }
   }
 
-
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files))
-  }
+    setFiles(Array.from(e.target.files));
+  };
 
   const handleUpload = async () => {
-    const clerkToken = await session?.getToken({ template: "supabase" })
-    const client = getSupabaseClient(clerkToken)
+    const clerkToken = await session?.getToken({ template: "supabase" });
+    const client = getSupabaseClient(clerkToken);
 
     try {
-      setUploading(true)
+      setUploading(true);
 
       if (!files.length) {
-        toast.info("Please select files to upload")
-        return
+        toast.info("Please select files to upload");
+        return;
       }
 
-      const uploadedUrls = []
+      const uploadedUrls = [];
 
-     
       for (const file of files) {
-        const fileExt = file.name.split(".").pop()
-        const fileName = `${Math.random()}.${fileExt}`
-        const filePath = `${fileName}`
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
 
-        const { data, error } = await client.storage.from("images").upload(filePath, file)
+        const { data, error } = await client.storage
+          .from("images")
+          .upload(filePath, file);
 
         if (error) {
-          toast.error(`Error uploading ${file.name}: ${error.message}`)
-          continue
+          toast.error(`Error uploading ${file.name}: ${error.message}`);
+          continue;
         }
 
-        const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(filePath)
+        const { data: publicUrlData, error: urlError } = client.storage
+          .from("images")
+          .getPublicUrl(filePath);
 
         if (urlError) {
-          toast.error(`Error getting URL for ${file.name}: ${urlError.message}`)
-          continue
+          toast.error(
+            `Error getting URL for ${file.name}: ${urlError.message}`
+          );
+          continue;
         }
 
-        uploadedUrls.push(publicUrlData.publicUrl)
+        uploadedUrls.push(publicUrlData.publicUrl);
       }
 
       if (uploadedUrls.length > 0) {
-        setFileURLs([...fileURLs, ...uploadedUrls])
-
+        setFileURLs([...fileURLs, ...uploadedUrls]);
 
         if (!coverImageURL) {
-          setCoverImageURL(uploadedUrls[0])
+          setCoverImageURL(uploadedUrls[0]);
         }
 
-        toast.success(`${uploadedUrls.length} files uploaded successfully`)
+        toast.success(`${uploadedUrls.length} files uploaded successfully`);
       }
     } catch (error) {
-      toast.error("Error uploading files: " + error.message)
+      toast.error("Error uploading files: " + error.message);
     } finally {
-      setUploading(false)
-      setFiles([])
+      setUploading(false);
+      setFiles([]);
     }
-  }
-
-  
-  
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -246,7 +281,6 @@ export default function PropertyMakerClient() {
               <h1 className="text-3xl font-bold">Ad Maker</h1>
               <p className="text-muted-foreground mt-1">Create your Property</p>
             </div>
-            
           </div>
 
           <Tabs defaultValue="content" className="w-full">
@@ -267,7 +301,7 @@ export default function PropertyMakerClient() {
                   <CardTitle className="text-xl">Property Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                <div className="space-y-2">
+                  <div className="space-y-2">
                     <label htmlFor="purpose" className="text-sm font-medium">
                       <House className="w-4 h-4 inline mr-2" />
                       Select Purpose
@@ -277,10 +311,8 @@ export default function PropertyMakerClient() {
                         <SelectValue placeholder="Select your Purpose" />
                       </SelectTrigger>
                       <SelectContent>
-                        
                         <SelectItem value="Rent">Rent</SelectItem>
                         <SelectItem value="Sell">Sell</SelectItem>
-                        
                       </SelectContent>
                     </Select>
                   </div>
@@ -348,40 +380,108 @@ export default function PropertyMakerClient() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <label htmlFor="price" className="text-sm font-medium">
-                      <DollarSign className="w-4 h-4 inline mr-2" />
-                      Price
-                    </label>
-                    <Input
-                      id="price"
-                      autoFocus
-                      type="number"
-                      placeholder="Enter Price"
-                      onChange={(e) => setPrice(e.target.value)}
-                      value={price}
-                      required
-                      className="h-12"
-                      aria-label="Price"
-                    />
+
+                  <div className="flex gap-x-5">
+                    <div className="space-y-2">
+                      <label htmlFor="price" className="text-sm font-medium">
+                        <DollarSign className="w-4 h-4 inline mr-2" />
+                        Price
+                      </label>
+                      <Input
+                        id="price"
+                        autoFocus
+                        type="number"
+                        placeholder="Enter Price"
+                        onChange={(e) => setPrice(e.target.value)}
+                        value={price}
+                        required
+                        className="h-12"
+                        aria-label="Price"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="area" className="text-sm font-medium">
+                        <SquareDashedBottom className="w-4 h-4 inline mr-2" />
+                        Area
+                      </label>
+                      <Input
+                        id="area"
+                        autoFocus
+                        type="number"
+                        placeholder="Enter Area in Sq. ft"
+                        onChange={(e) => setArea(e.target.value)}
+                        value={area}
+                        required
+                        className="h-12"
+                        aria-label="Area"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="area" className="text-sm font-medium">
-                      <SquareDashedBottom className="w-4 h-4 inline mr-2" />
-                      Area
-                    </label>
-                    <Input
-                      id="area"
-                      autoFocus
-                      type="number"
-                      placeholder="Enter Area in Sq. ft"
-                      onChange={(e) => setArea(e.target.value)}
-                      value={area}
-                      required
-                      className="h-12"
-                      aria-label="Area"
-                    />
+                  <div className="flex gap-x-5">
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bed"
+                        className="text-sm font-medium items-center"
+                      >
+                        <Bed className="w-4 h-4 inline mr-2" />
+                        No. of Beds
+                      </label>
+                      <Input
+                        id="bed"
+                        autoFocus
+                        type="number"
+                        placeholder="How many beds?"
+                        onChange={(e) => setBed(e.target.value)}
+                        value={bed}
+                        required
+                        className="h-12"
+                        aria-label="bed"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bed"
+                        className="text-sm font-medium items-center"
+                      >
+                        <ShowerHead className="w-4 h-4 inline mr-2" />
+                        No. of Bathrooms
+                      </label>
+                      <Input
+                        id="bathroom"
+                        autoFocus
+                        type="number"
+                        placeholder="How many bathrooms?"
+                        onChange={(e) => setBathroom(e.target.value)}
+                        value={bathroom}
+                        required
+                        className="h-12"
+                        aria-label="bathroom"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="bed"
+                        className="text-sm font-medium items-center"
+                      >
+                        <Bed className="w-4 h-4 inline mr-2" />
+                        Year Built
+                      </label>
+                      <Input
+                        id="yearBuilt"
+                        autoFocus
+                        type="number"
+                        placeholder="How many beds?"
+                        onChange={(e) => setYear(e.target.value)}
+                        value={year}
+                        required
+                        className="h-12"
+                        aria-label="year built"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -419,14 +519,14 @@ export default function PropertyMakerClient() {
                         !area ||
                         !coverImageURL ||
                         !location ||
-                        !purpose
-
+                        !purpose ||
+                        !bed ||
+                        !bathroom ||
+                        !year
                       }
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {publishing
-                        ? "Publishing..."
-                        : "Publish Property"}
+                      {publishing ? "Publishing..." : "Publish Property"}
                     </Button>
                   </div>
                 </form>
