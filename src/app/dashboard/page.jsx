@@ -126,6 +126,15 @@ export default function Dashboard() {
     }).format(date);
   };
 
+  const formatPrice = (price) => {
+    if (!price) return "Price on request"
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(price)
+  }
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -381,7 +390,7 @@ export default function Dashboard() {
                           <Separator className="mb-2 mt-2"/>
 
                           <p className="text-white line-clamp-2 font-bold text-lg">
-                            $ {task.price}
+                            {formatPrice(task.price)}
                           </p>
                           
 

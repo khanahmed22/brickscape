@@ -38,6 +38,7 @@ import {
   MessageSquare,
   User,
   Eye,
+  Info,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -488,8 +489,8 @@ export default function PropertyListingPage() {
               Back to Dashboard
             </Button>
 
-            <div className="mb-2 flex items-center justify-center gap-x-2 text-lg font-bold bg-primary p-3 text-white rounded-lg">
-              How buyers see your property <Eye/>
+            <div className="mb-5 flex items-center justify-center gap-x-2 text-lg font-bold bg-secondary p-2 text-slate-700 dark:text-white rounded-lg">
+              <Info size={20}/> How buyers see your property 
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
