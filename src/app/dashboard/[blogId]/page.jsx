@@ -38,6 +38,7 @@ import {
   User,
   Info,
   Hammer,
+  Pyramid,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -999,11 +1000,11 @@ export default function PropertyListingPage() {
                   <TabsList className="grid grid-cols-2 mb-6">
                     <TabsTrigger value="content">
                       <FileText className="w-4 h-4 mr-2" />
-                      Content
+                      Property Details
                     </TabsTrigger>
                     <TabsTrigger value="media">
                       <ImageUp className="w-4 h-4 mr-2" />
-                      Featured Image
+                      Property Images
                     </TabsTrigger>
                   </TabsList>
 
@@ -1015,7 +1016,7 @@ export default function PropertyListingPage() {
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
                           <label htmlFor="purpose" className="text-sm font-medium">
-                            <House className="w-4 h-4 inline mr-2" />
+                            <Pyramid className="w-4 h-4 inline mr-2" />
                             Select Purpose
                           </label>
                           <Select value={purpose} onValueChange={setPurpose}>

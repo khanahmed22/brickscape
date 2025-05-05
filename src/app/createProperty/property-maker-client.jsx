@@ -23,6 +23,7 @@ import {
   ShowerHead,
   Phone,
   Hammer,
+  Pyramid,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -305,7 +306,7 @@ export default function PropertyMakerClient() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="purpose" className="text-sm font-medium">
-                      <House className="w-4 h-4 inline mr-2" />
+                      <Pyramid className="w-4 h-4 inline mr-2" />
                       Select Purpose
                     </label>
                     <Select value={purpose} onValueChange={setPurpose}>

@@ -166,8 +166,8 @@ export default function Dashboard() {
           {/* Header Section */}
           <p className="mb-6 flex items-center max-md:text-lg max-md:flex-col">
             Welcome Back
-            <span className="max-md:text-lg ml-2 font-bold text-xl bg-gradient-to-tr from-rose-600 to-red-500 bg-clip-text text-transparent">
-              {user?.firstName} {user?.lastName}!
+            <span className="max-md:text-lg ml-2 font-bold text-xl bg-gradient-to-r from-blue-500 to-teal-400 bg-clip-text text-transparent">
+              {user?.firstName}!
             </span>
           </p>
           <div className="flex flex-col md:flex-row justify-between max-md:justify-center max-md:items-center items-start md:items-center mb-8">
