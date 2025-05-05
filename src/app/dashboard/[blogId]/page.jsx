@@ -1169,14 +1169,14 @@ export default function PropertyListingPage() {
                             className="text-sm font-medium"
                           >
                             <MapPin className="w-4 h-4 inline mr-2" />
-                            Location
+                            Property Address
                           </label>
                           <Input
                             id="location"
                             type="text"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            placeholder="Enter property location"
+                            placeholder="Enter property address"
                             className="h-12"
                           />
                         </div>

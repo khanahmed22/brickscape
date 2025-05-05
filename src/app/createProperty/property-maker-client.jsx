@@ -495,12 +495,12 @@ export default function PropertyMakerClient() {
                   <div className="space-y-2">
                     <label htmlFor="location" className="text-sm font-medium">
                       <MapPin className="w-4 h-4 inline mr-2" />
-                      Location
+                      Property Address
                     </label>
                     <Input
                       id="location"
                       type="text"
-                      placeholder="Enter location of your property"
+                      placeholder="Enter address of your property"
                       onChange={(e) => setLocation(e.target.value)}
                       value={location}
                       required
