@@ -12,8 +12,7 @@ import { useSession,useUser } from "@clerk/nextjs"
 import { Separator } from "@/components/ui/separator"
 
 
-
-export default function AuthorPage() {
+export default function SellerPage() {
   const { email } = useParams()
   const router = useRouter()
   const decodedEmail = typeof email === "string" ? decodeURIComponent(email) : ""
@@ -24,6 +23,7 @@ export default function AuthorPage() {
   const { user } = useUser()
   const authorName = user?.firstName;
   const authorAvatar = user?.imageUrl;
+  
 
 
   useEffect(() => {
@@ -189,7 +189,7 @@ export default function AuthorPage() {
 
             <div className="space-y-4 flex-1">
               <p className="font-bold">{authorName}</p>
-              {/*<h2 className="text-xl font-bold">{author.name}</h2>*/}
+
               
 
               <div className="flex items-center text-muted-foreground">
@@ -266,7 +266,7 @@ export default function AuthorPage() {
       <Separator className="my-8" />
 
       <div className="text-center">
-        <Button onClick={() => router.push("/gallery")}>Back to Gallery</Button>
+        <Button onClick={() => router.push("/propertySearch")}>Back to Properties</Button>
       </div>
     </div>
   )

@@ -278,7 +278,7 @@ export default function HomePage() {
 
         <div className="relative z-10 max-w-5xl w-full px-4 md:px-8">
           <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">Find Your Dream Property</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">Find Your Dream Property</h1>
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Discover the perfect home, apartment, or commercial space that fits your needs
             </p>
