@@ -21,6 +21,8 @@ import {
   House,
   Bed,
   ShowerHead,
+  Phone,
+  Hammer,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -413,7 +415,7 @@ export default function PropertyMakerClient() {
                         onChange={(e) => setArea(e.target.value)}
                         value={area}
                         required
-                        className="h-12"
+                        className="h-12 w-full"
                         aria-label="Area"
                       />
                     </div>
@@ -467,14 +469,14 @@ export default function PropertyMakerClient() {
                         htmlFor="bed"
                         className="text-sm font-medium items-center"
                       >
-                        <Bed className="w-4 h-4 inline mr-2" />
+                        <Hammer className="w-4 h-4 inline mr-2" />
                         Year Built
                       </label>
                       <Input
                         id="yearBuilt"
                         autoFocus
                         type="number"
-                        placeholder="How many beds?"
+                        placeholder="When was it built?"
                         onChange={(e) => setYear(e.target.value)}
                         value={year}
                         required
@@ -488,6 +490,23 @@ export default function PropertyMakerClient() {
                     <label htmlFor="location" className="text-sm font-medium">
                       <MapPin className="w-4 h-4 inline mr-2" />
                       Location
+                    </label>
+                    <Input
+                      id="location"
+                      type="text"
+                      placeholder="Enter location of your property"
+                      onChange={(e) => setLocation(e.target.value)}
+                      value={location}
+                      required
+                      className="h-12"
+                      aria-label="LOCATION"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="location" className="text-sm font-medium">
+                      <Phone className="w-4 h-4 inline mr-2" />
+                      Phone Number
                     </label>
                     <Input
                       id="location"

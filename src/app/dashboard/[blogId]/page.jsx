@@ -1178,14 +1178,14 @@ export default function PropertyListingPage() {
                         htmlFor="bed"
                         className="text-sm font-medium items-center"
                       >
-                        <Bed className="w-4 h-4 inline mr-2" />
+                        <Hammer className="w-4 h-4 inline mr-2" />
                         Year Built
                       </label>
                       <Input
                         id="yearBuilt"
                         autoFocus
                         type="number"
-                        placeholder="How many beds?"
+                        placeholder="When was it built?"
                         onChange={(e) => setYear(e.target.value)}
                         value={year}
                         required
