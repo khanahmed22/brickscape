@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
-import { useSession, useUser } from "@clerk/nextjs";
-import getSupabaseClient from "@/app/utils/supabase";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
+import { useSession, useUser } from "@clerk/nextjs"
+import getSupabaseClient from "@/app/utils/supabase"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import {
   DollarSign,
   ImageUp,
@@ -18,91 +18,103 @@ import {
   Send,
   SquareDashedBottom,
   MapPin,
-  House,
+  HomeIcon as House,
   Bed,
   ShowerHead,
   Phone,
   Hammer,
   Pyramid,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { slugify } from "@/app/utils/slugify";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Map,
+} from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { slugify } from "@/app/utils/slugify"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+// Dynamically import MapBox to avoid SSR issues
+const MapSelector = dynamic(() => import("./map-selector"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[300px] border rounded-md bg-muted/20 flex items-center justify-center">Loading map...</div>
+  ),
+})
 
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
   loading: () => (
-    <div className="h-[400px] border rounded-md bg-muted/20 flex items-center justify-center">
-      Loading editor...
-    </div>
+    <div className="h-[400px] border rounded-md bg-muted/20 flex items-center justify-center">Loading editor...</div>
   ),
-});
+})
 
 export default function PropertyMakerClient() {
-  const [tasks, setTasks] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [area, setArea] = useState("");
-  const [location, setLocation] = useState("");
-  const [purpose, setPurpose] = useState("");
-  const [bed, setBed] = useState("");
-  const [bathroom, setBathroom] = useState("");
-  const [year, setYear] = useState("");
-  const [phoneNumber,setPhoneNumber] = useState("")
-  const [blogContent, setBlogContent] = useState("");
-  const [editingTaskId, setEditingTaskId] = useState(null);
-  const [slug, setSlug] = useState("");
-  const [genre, setGenre] = useState("");
-  const { user } = useUser();
-  const { session } = useSession();
+  const [tasks, setTasks] = useState([])
+  const [isLoading, setLoading] = useState(false)
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [price, setPrice] = useState("")
+  const [area, setArea] = useState("")
+  const [location, setLocation] = useState("")
+  const [coordinates, setCoordinates] = useState({ lat: null, lng: null })
+  const [purpose, setPurpose] = useState("")
+  const [bed, setBed] = useState("")
+  const [bathroom, setBathroom] = useState("")
+  const [year, setYear] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [blogContent, setBlogContent] = useState("")
+  const [editingTaskId, setEditingTaskId] = useState(null)
+  const [slug, setSlug] = useState("")
+  const [genre, setGenre] = useState("")
+  const [showMap, setShowMap] = useState(false)
+  const { user } = useUser()
+  const { session } = useSession()
 
-  const router = useRouter();
-  const [files, setFiles] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [publishing, setPublishing] = useState(false);
-  const [fileURLs, setFileURLs] = useState([]);
-  const [coverImageURL, setCoverImageURL] = useState("");
+  const router = useRouter()
+  const [files, setFiles] = useState([])
+  const [uploading, setUploading] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [fileURLs, setFileURLs] = useState([])
+  const [coverImageURL, setCoverImageURL] = useState("")
 
-  const email = user?.primaryEmailAddress?.emailAddress || "";
-  const authorName = user?.firstName;
-  const authorAvatar = user?.imageUrl;
+  const email = user?.primaryEmailAddress?.emailAddress || ""
+  const authorName = user?.firstName
+  const authorAvatar = user?.imageUrl
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) return
 
     async function loadTasks() {
-      setLoading(true);
-      const clerkToken = await session?.getToken({ template: "supabase" });
-      const client = getSupabaseClient(clerkToken);
-      const { data, error } = await client.from("tasks").select();
-      if (!error) setTasks(data);
-      setLoading(false);
+      setLoading(true)
+      const clerkToken = await session?.getToken({ template: "supabase" })
+      const client = getSupabaseClient(clerkToken)
+      const { data, error } = await client.from("tasks").select()
+      if (!error) setTasks(data)
+      setLoading(false)
     }
 
-    loadTasks();
-  }, [user, session]);
+    loadTasks()
+  }, [user, session])
 
   useEffect(() => {
-    setSlug(slugify(name));
-  }, [name]);
+    setSlug(slugify(name))
+  }, [name])
+
+  // Handle location selection from map
+  const handleLocationSelect = (lat, lng, address) => {
+    setCoordinates({ lat, lng })
+    if (address) {
+      setLocation(address)
+    }
+    setShowMap(false)
+  }
 
   async function createTask(e) {
-    e.preventDefault();
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
+    e.preventDefault()
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
 
     try {
-      setPublishing(true);
+      setPublishing(true)
 
       if (editingTaskId) {
         await client
@@ -118,13 +130,14 @@ export default function PropertyMakerClient() {
             year,
             blogContent,
             location,
+            coordinates,
             phoneNumber,
             fileURL: coverImageURL,
             fileURLs,
             slug,
             genre,
           })
-          .eq("id", editingTaskId);
+          .eq("id", editingTaskId)
 
         setTasks(
           tasks.map((task) =>
@@ -136,6 +149,7 @@ export default function PropertyMakerClient() {
                   price,
                   area,
                   location,
+                  coordinates,
                   purpose,
                   bed,
                   bathroom,
@@ -147,10 +161,10 @@ export default function PropertyMakerClient() {
                   slug,
                   genre,
                 }
-              : task
-          )
-        );
-        setEditingTaskId(null);
+              : task,
+          ),
+        )
+        setEditingTaskId(null)
       } else {
         const blogData = {
           name,
@@ -165,120 +179,109 @@ export default function PropertyMakerClient() {
           price,
           area,
           location,
+          coordinates,
           phoneNumber,
           blogContent,
           fileURL: coverImageURL,
           fileURLs,
           slug,
           genre,
-        };
+        }
 
-        const { data, error } = await client
-          .from("tasks")
-          .insert(blogData)
-          .select();
+        const { data, error } = await client.from("tasks").insert(blogData).select()
 
-        if (error) throw error;
+        if (error) throw error
 
-        const { error: allTasksError } = await client
-          .from("all_tasks")
-          .insert(blogData);
+        const { error: allTasksError } = await client.from("all_tasks").insert(blogData)
 
         if (allTasksError) {
-          console.error("Error inserting into all_tasks:", allTasksError);
-          toast.warning(
-            "Property saved to tasks but failed to save to all_tasks"
-          );
+          console.error("Error inserting into all_tasks:", allTasksError)
+          toast.warning("Property saved to tasks but failed to save to all_tasks")
         }
       }
 
-      setName("");
-      setDescription("");
-      setBlogContent("");
-      setFileURLs([]);
-      setCoverImageURL("");
-      setSlug("");
-      setGenre("");
-      setPrice("");
-      setArea("");
-      setLocation("");
-      setPurpose("");
-      setBed("");
-      setBathroom("");
-      setYear("");
+      setName("")
+      setDescription("")
+      setBlogContent("")
+      setFileURLs([])
+      setCoverImageURL("")
+      setSlug("")
+      setGenre("")
+      setPrice("")
+      setArea("")
+      setLocation("")
+      setCoordinates({ lat: null, lng: null })
+      setPurpose("")
+      setBed("")
+      setBathroom("")
+      setYear("")
       setPhoneNumber("")
 
-      toast.success("Blog published successfully");
-      router.push("/dashboard");
+      toast.success("Property published successfully")
+      router.push("/dashboard")
     } catch (error) {
-      toast.error("Error publishing blog: " + error.message);
+      toast.error("Error publishing property: " + error.message)
     } finally {
-      setPublishing(false);
+      setPublishing(false)
     }
   }
 
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
-  };
+    setFiles(Array.from(e.target.files))
+  }
 
   const handleUpload = async () => {
-    const clerkToken = await session?.getToken({ template: "supabase" });
-    const client = getSupabaseClient(clerkToken);
+    const clerkToken = await session?.getToken({ template: "supabase" })
+    const client = getSupabaseClient(clerkToken)
 
     try {
-      setUploading(true);
+      setUploading(true)
 
       if (!files.length) {
-        toast.info("Please select files to upload");
-        return;
+        toast.info("Please select files to upload")
+        return
       }
 
-      const uploadedUrls = [];
+      const uploadedUrls = []
 
       for (const file of files) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${fileName}`;
+        const fileExt = file.name.split(".").pop()
+        const fileName = `${Math.random()}.${fileExt}`
+        const filePath = `${fileName}`
 
-        const { data, error } = await client.storage
-          .from("images")
-          .upload(filePath, file);
+        const { data, error } = await client.storage.from("images").upload(filePath, file)
 
         if (error) {
-          toast.error(`Error uploading ${file.name}: ${error.message}`);
-          continue;
+          toast.error(`Error uploading ${file.name}: ${error.message}`)
+          continue
         }
 
-        const { data: publicUrlData, error: urlError } = client.storage
-          .from("images")
-          .getPublicUrl(filePath);
+        const { data: publicUrlData, error: urlError } = client.storage.from("images").getPublicUrl(filePath)
 
         if (urlError) {
-          toast.error(
-            `Error getting URL for ${file.name}: ${urlError.message}`
-          );
-          continue;
+          toast.error(`Error getting URL for ${file.name}: ${urlError.message}`)
+          continue
         }
 
-        uploadedUrls.push(publicUrlData.publicUrl);
+        uploadedUrls.push(publicUrlData.publicUrl)
       }
 
       if (uploadedUrls.length > 0) {
-        setFileURLs([...fileURLs, ...uploadedUrls]);
+        setFileURLs([...fileURLs, ...uploadedUrls])
 
         if (!coverImageURL) {
-          setCoverImageURL(uploadedUrls[0]);
+          setCoverImageURL(uploadedUrls[0])
         }
 
-        toast.success(`${uploadedUrls.length} files uploaded successfully`);
+        toast.success(`${uploadedUrls.length} files uploaded successfully`)
       }
     } catch (error) {
-      toast.error("Error uploading files: " + error.message);
+      toast.error("Error uploading files: " + error.message)
     } finally {
-      setUploading(false);
-      setFiles([]);
+      setUploading(false)
+      setFiles([])
     }
-  };
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -292,10 +295,14 @@ export default function PropertyMakerClient() {
           </div>
 
           <Tabs defaultValue="content" className="w-full">
-            <TabsList className="grid grid-cols-2 mb-6">
+            <TabsList className="grid grid-cols-3 mb-6">
               <TabsTrigger value="content">
                 <FileText className="w-4 h-4 mr-2" />
                 Details
+              </TabsTrigger>
+              <TabsTrigger value="location">
+                <MapPin className="w-4 h-4 mr-2" />
+                Location
               </TabsTrigger>
               <TabsTrigger value="media">
                 <FileImage className="w-4 h-4 mr-2" />
@@ -344,10 +351,7 @@ export default function PropertyMakerClient() {
                   </div>
 
                   <div className="space-y-2">
-                    <label
-                      htmlFor="description"
-                      className="text-sm font-medium"
-                    >
+                    <label htmlFor="description" className="text-sm font-medium">
                       <FileText className="w-4 h-4 inline mr-2" />
                       Description
                     </label>
@@ -373,9 +377,7 @@ export default function PropertyMakerClient() {
                         <SelectValue placeholder="Select a property type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="uncategorized">
-                          Uncategorized
-                        </SelectItem>
+                        <SelectItem value="uncategorized">Uncategorized</SelectItem>
                         <SelectItem value="House">House</SelectItem>
                         <SelectItem value="Flat">Flat</SelectItem>
                         <SelectItem value="Farm House">Farm House</SelectItem>
@@ -429,10 +431,7 @@ export default function PropertyMakerClient() {
 
                   <div className="flex gap-x-5">
                     <div className="space-y-2">
-                      <label
-                        htmlFor="bed"
-                        className="text-sm font-medium items-center"
-                      >
+                      <label htmlFor="bed" className="text-sm font-medium items-center">
                         <Bed className="w-4 h-4 inline mr-2" />
                         No. of Beds
                       </label>
@@ -450,10 +449,7 @@ export default function PropertyMakerClient() {
                     </div>
 
                     <div className="space-y-2">
-                      <label
-                        htmlFor="bed"
-                        className="text-sm font-medium items-center"
-                      >
+                      <label htmlFor="bed" className="text-sm font-medium items-center">
                         <ShowerHead className="w-4 h-4 inline mr-2" />
                         No. of Bathrooms
                       </label>
@@ -471,10 +467,7 @@ export default function PropertyMakerClient() {
                     </div>
 
                     <div className="space-y-2">
-                      <label
-                        htmlFor="bed"
-                        className="text-sm font-medium items-center"
-                      >
+                      <label htmlFor="bed" className="text-sm font-medium items-center">
                         <Hammer className="w-4 h-4 inline mr-2" />
                         Year Built
                       </label>
@@ -490,23 +483,6 @@ export default function PropertyMakerClient() {
                         aria-label="year built"
                       />
                     </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="location" className="text-sm font-medium">
-                      <MapPin className="w-4 h-4 inline mr-2" />
-                      Property Address
-                    </label>
-                    <Input
-                      id="location"
-                      type="text"
-                      placeholder="Enter address of your property"
-                      onChange={(e) => setLocation(e.target.value)}
-                      value={location}
-                      required
-                      className="h-12"
-                      aria-label="LOCATION"
-                    />
                   </div>
 
                   <div className="space-y-2">
@@ -527,36 +503,53 @@ export default function PropertyMakerClient() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
 
-              <div>
-                <form onSubmit={createTask}>
-                  <div className="mt-6 flex justify-end">
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full md:w-auto"
-                      disabled={
-                        publishing ||
-                        !name ||
-                        !description ||
-                        !slug ||
-                        !price ||
-                        !area ||
-                        !coverImageURL ||
-                        !location ||
-                        !purpose ||
-                        !bed ||
-                        !bathroom ||
-                        !year ||
-                        !phoneNumber
-                      }
-                    >
-                      <Send className="w-4 h-4 mr-2" />
-                      {publishing ? "Publishing..." : "Publish Property"}
-                    </Button>
+            <TabsContent value="location" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Property Location</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="location" className="text-sm font-medium">
+                      <MapPin className="w-4 h-4 inline mr-2" />
+                      Property Address
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="location"
+                        type="text"
+                        placeholder="Enter address of your property"
+                        onChange={(e) => setLocation(e.target.value)}
+                        value={location}
+                        required
+                        className="h-12 flex-1"
+                        aria-label="LOCATION"
+                      />
+                      <Button type="button" variant="outline" onClick={() => setShowMap(!showMap)} className="h-12">
+                        <Map className="w-4 h-4 mr-2" />
+                        {showMap ? "Hide Map" : "Show Map"}
+                      </Button>
+                    </div>
                   </div>
-                </form>
-              </div>
+
+                  {showMap && (
+                    <div className="mt-4">
+                      <MapSelector
+                        onLocationSelect={handleLocationSelect}
+                        initialAddress={location}
+                        initialCoordinates={coordinates.lat && coordinates.lng ? coordinates : null}
+                      />
+                      {coordinates.lat && coordinates.lng && (
+                        <div className="mt-2 text-sm text-muted-foreground">
+                          Selected coordinates: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="media">
@@ -566,15 +559,10 @@ export default function PropertyMakerClient() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium">
-                      Upload Your Property images
-                    </h3>
+                    <h3 className="text-sm font-medium">Upload Your Property images</h3>
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                       <div className="flex-1">
-                        <label
-                          htmlFor="image-upload"
-                          className="text-sm font-medium block mb-2"
-                        >
+                        <label htmlFor="image-upload" className="text-sm font-medium block mb-2">
                           Upload Image (Max: 50MB)
                         </label>
                         <Input
@@ -606,9 +594,7 @@ export default function PropertyMakerClient() {
 
                   {fileURLs.length > 0 && (
                     <div className="mt-8 border-t pt-6">
-                      <h3 className="text-sm font-medium mb-4">
-                        Property Images
-                      </h3>
+                      <h3 className="text-sm font-medium mb-4">Property Images</h3>
 
                       {/* Product Image Gallery - E-commerce Style */}
                       <div className="grid grid-cols-1 gap-4">
@@ -620,10 +606,7 @@ export default function PropertyMakerClient() {
                             className="h-[200px] w-[200px] object-contain  object-center"
                           />
                           <div className="absolute top-2 right-2">
-                            <Badge
-                              variant="secondary"
-                              className="bg-background/80 backdrop-blur-sm"
-                            >
+                            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
                               <CheckCircle2 className="w-3 h-3 mr-1 text-primary" />
                               Cover Image
                             </Badge>
@@ -636,9 +619,7 @@ export default function PropertyMakerClient() {
                             <div
                               key={index}
                               className={`relative aspect-square cursor-pointer rounded-md overflow-hidden border transition-all ${
-                                url === coverImageURL
-                                  ? "ring-2 ring-primary ring-offset-1"
-                                  : "hover:opacity-90"
+                                url === coverImageURL ? "ring-2 ring-primary ring-offset-1" : "hover:opacity-90"
                               }`}
                               onClick={() => setCoverImageURL(url)}
                             >
@@ -654,9 +635,8 @@ export default function PropertyMakerClient() {
 
                       <div className="mt-4">
                         <p className="text-sm text-muted-foreground">
-                          Click on a thumbnail to set it as the cover image. The
-                          cover image will be displayed as the main image in
-                          listings.
+                          Click on a thumbnail to set it as the cover image. The cover image will be displayed as the
+                          main image in listings.
                         </p>
                       </div>
                     </div>
@@ -665,8 +645,38 @@ export default function PropertyMakerClient() {
               </Card>
             </TabsContent>
           </Tabs>
+
+          <div className="mt-6">
+            <form onSubmit={createTask}>
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full md:w-auto"
+                  disabled={
+                    publishing ||
+                    !name ||
+                    !description ||
+                    !slug ||
+                    !price ||
+                    !area ||
+                    !coverImageURL ||
+                    !location ||
+                    !purpose ||
+                    !bed ||
+                    !bathroom ||
+                    !year ||
+                    !phoneNumber
+                  }
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  {publishing ? "Publishing..." : "Publish Property"}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
