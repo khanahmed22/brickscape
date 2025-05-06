@@ -32,8 +32,8 @@ import { Badge } from "@/components/ui/badge"
 import { slugify } from "@/app/utils/slugify"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Dynamically import MapBox to avoid SSR issues
-const MapSelector = dynamic(() => import("./map-selector"), {
+
+const MapSelector = dynamic(() => import("../../components/map-selector"), {
   ssr: false,
   loading: () => (
     <div className="h-[300px] border rounded-md bg-muted/20 flex items-center justify-center">Loading map...</div>
@@ -99,7 +99,7 @@ export default function PropertyMakerClient() {
     setSlug(slugify(name))
   }, [name])
 
-  // Handle location selection from map
+
   const handleLocationSelect = (lat, lng, address) => {
     setCoordinates({ lat, lng })
     if (address) {

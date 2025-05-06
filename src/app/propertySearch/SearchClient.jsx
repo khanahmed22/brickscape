@@ -749,8 +749,8 @@ export default function PropertySearchPage() {
                       </div>
 
                       <div className="flex flex-col space-y-2 items-start justify-between text-muted-foreground line-clamp-2">
-                        <span className="flex items-center space-x-2 text-sm">
-                          <MapPin size={17} className="mr-2" /> {property.location}
+                        <span className="flex items-center  text-sm">
+                          <MapPin size={17} className="mr-2" /> <span className="truncate ...">{property.location}</span>
                         </span>{" "}
                         <span className="flex items-center space-x-2 text-sm">
                           <SquareDashedBottom size={17} className="mr-2"/> {property.area} Sq ft
@@ -840,7 +840,7 @@ export default function PropertySearchPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
                           <div className="flex items-center text-muted-foreground">
-                            <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                            <MapPin  className="h-4 w-4 mr-1 flex-shrink-0" />
                             <span className="line-clamp-1">
                               {property.location || "Location not specified"}
                             </span>

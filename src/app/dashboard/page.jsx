@@ -384,7 +384,7 @@ export default function Dashboard() {
                           
 
                           <div className="flex flex-col items-start space-y-2 justify-between text-muted-foreground line-clamp-2">
-                          <span className="flex items-center text-sm"><MapPin size={17} className="mr-2"/> {task.location}</span> <span className="flex items-center space-x-2"><SquareDashedBottom size={17} className="mr-2"/> {task.area} Sq ft</span>
+                          <span className="flex items-start text-sm"><MapPin size={17} className="mr-2"/> <span className="truncate ...">{task.location}</span></span> <span className="flex items-center space-x-2"><SquareDashedBottom size={17} className="mr-2"/> {task.area} Sq ft</span>
                           </div>
 
                           <Separator className="mb-2 mt-2"/>

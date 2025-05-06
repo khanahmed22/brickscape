@@ -11,6 +11,7 @@ import { slugify } from "@/app/utils/slugify"
 import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
+import dynamic from "next/dynamic"
 
 import {
   Copy,
@@ -22,7 +23,6 @@ import {
   Maximize2,
   X,
   MapPin,
-  Home,
   SquareIcon as SquareFootIcon,
   Phone,
   User,
@@ -30,9 +30,8 @@ import {
   Heart,
   Bed,
   Bath,
-  Car,
   Hammer,
-  House,
+  HomeIcon as House,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -44,18 +43,29 @@ import { WhatsappShareButton, WhatsappIcon } from "next-share"
 import { TwitterShareButton, TwitterIcon } from "next-share"
 import { FacebookShareButton, FacebookIcon } from "next-share"
 
-export default function PropertyListingPage() {
+
+const PropertyMap = dynamic(() => import("../../../../components/property-map"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] border rounded-md bg-muted/20 flex items-center justify-center">
+      <span>Loading map...</span>
+    </div>
+  ),
+})
+
+export default function PropertyListingsPage() {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState("")
   const [area, setArea] = useState("")
   const [location, setLocation] = useState("")
-  const [phoneNumber,setPhoneNumber]= useState("")
-  const [purpose,setPurpose] = useState("")
-  const [propertyType,setPropertyType] = useState("")
-  const [bed, setBed] = useState("");
-  const [bathroom, setBathroom] = useState("");
-  const [year, setYear] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [purpose, setPurpose] = useState("")
+  const [propertyType, setPropertyType] = useState("")
+  const [bed, setBed] = useState("")
+  const [bathroom, setBathroom] = useState("")
+  const [year, setYear] = useState("")
+  const [coordinates, setCoordinates] = useState({ lat: null, lng: null })
   const [blogContent, setBlogContent] = useState("")
   const [fileURL, setFileURL] = useState("")
   const [fileURLs, setFileURLs] = useState([])
@@ -67,7 +77,7 @@ export default function PropertyListingPage() {
   const [contactEmail, setContactEmail] = useState("")
   const [contactMessage, setContactMessage] = useState("")
   const [isSending, setIsSending] = useState(false)
-  
+  const [mapKey, setMapKey] = useState(0) // Add a key to force re-render of map
 
   const router = useRouter()
   const { blogId: id } = useParams()
@@ -75,39 +85,33 @@ export default function PropertyListingPage() {
   const { session } = useSession()
   const authorName = user?.firstName
 
-
   const [slug, setNewSlug] = useState(slugify(name))
   const pathname = usePathname()
-  const allowCopy = useRef(false) 
-
+  const allowCopy = useRef(false)
 
   const propertyFeatures = {
     bedrooms: bed,
     bathrooms: bathroom,
     propertyType: propertyType,
     yearBuilt: year,
-   
   }
 
   function copyUrl() {
-    allowCopy.current = true // Allow the copy action
+    allowCopy.current = true
     const el = document.createElement("input")
     el.value = window.location.href
     document.body.appendChild(el)
     el.select()
     document.execCommand("copy")
     document.body.removeChild(el)
-    allowCopy.current = false // Reset the flag
+    allowCopy.current = false
     toast.success("Listing URL copied to clipboard")
   }
 
-  function CallSeller(){
-    window.open(`tel:${phoneNumber}`, "_self");
+  function CallSeller() {
+    window.open(`tel:${phoneNumber}`, "_self")
   }
 
- 
-
- 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isFullscreen) {
@@ -125,7 +129,6 @@ export default function PropertyListingPage() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isFullscreen, fileURLs, currentImageIndex])
 
-
   const {
     data: property,
     mutate,
@@ -139,7 +142,6 @@ export default function PropertyListingPage() {
       if (error) throw error
       return data
     } else {
-      
       const client = getSupabaseClient()
       const { data, error } = await client.from("all_tasks").select().eq("slug", id).single()
       if (error) throw error
@@ -147,13 +149,12 @@ export default function PropertyListingPage() {
     }
   })
 
-  useMemo(() => {
+  useEffect(() => {
     if (property) {
       setName(property.name)
       setDescription(property.description)
       setBlogContent(property.blogContent)
       setFileURL(property.fileURL)
-      
       setFileURLs(property.fileURLs || (property.fileURL ? [property.fileURL] : []))
       setAuthorEmail(property.email)
       setAuthorAvatar(property.authorAvatar)
@@ -166,6 +167,40 @@ export default function PropertyListingPage() {
       setYear(property.year)
       setPropertyType(property.genre)
       setPhoneNumber(property.phoneNumber)
+
+     
+      if (property.coordinates) {
+        try {
+       
+          const coords =
+            typeof property.coordinates === "string" ? JSON.parse(property.coordinates) : property.coordinates
+
+        
+          if (coords && typeof coords === "object") {
+            const lat = Number.parseFloat(coords.lat)
+            const lng = Number.parseFloat(coords.lng)
+
+            if (!isNaN(lat) && !isNaN(lng)) {
+              setCoordinates({ lat, lng })
+              console.log("Valid coordinates set:", { lat, lng })
+              
+              setMapKey((prevKey) => prevKey + 1)
+            } else {
+              console.error("Invalid coordinate values:", coords)
+              setCoordinates({ lat: null, lng: null })
+            }
+          } else {
+            console.error("Invalid coordinates format:", coords)
+            setCoordinates({ lat: null, lng: null })
+          }
+        } catch (error) {
+          console.error("Error parsing coordinates:", error)
+          setCoordinates({ lat: null, lng: null })
+        }
+      } else {
+        console.log("No coordinates found in property data")
+        setCoordinates({ lat: null, lng: null })
+      }
     }
   }, [property])
 
@@ -197,7 +232,6 @@ export default function PropertyListingPage() {
     setNewSlug(slugify(name))
   }, [name])
 
- 
   const navigateImages = (direction) => {
     if (!fileURLs || fileURLs.length <= 1) return
 
@@ -211,7 +245,6 @@ export default function PropertyListingPage() {
     setCurrentImageIndex(newIndex)
   }
 
-  // Toggle fullscreen mode
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen)
   }
@@ -220,7 +253,6 @@ export default function PropertyListingPage() {
     e.preventDefault()
     setIsSending(true)
 
-   
     setTimeout(() => {
       toast.success("Your message has been sent to the seller")
       setContactName("")
@@ -230,6 +262,19 @@ export default function PropertyListingPage() {
     }, 1500)
   }
 
+  // Check if coordinates are valid for displaying the map
+  const hasValidCoordinates = useMemo(() => {
+    const isValid =
+      coordinates &&
+      typeof coordinates === "object" &&
+      coordinates.lat !== null &&
+      coordinates.lng !== null &&
+      !isNaN(Number.parseFloat(coordinates.lat)) &&
+      !isNaN(Number.parseFloat(coordinates.lng))
+
+    console.log("Coordinates valid:", isValid, coordinates)
+    return isValid
+  }, [coordinates])
 
   if (isPropertyLoading) {
     return (
@@ -288,7 +333,6 @@ export default function PropertyListingPage() {
     )
   }
 
-  // Error state
   if (propertyError) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -312,7 +356,6 @@ export default function PropertyListingPage() {
     )
   }
 
-  // View Mode
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -335,7 +378,7 @@ export default function PropertyListingPage() {
 
               {/* Location */}
               <div className="flex items-center text-muted-foreground mb-6">
-                <MapPin className="h-4 w-4 mr-1" />
+                <MapPin size={50} className="h-4 w-4 mr-1" />
                 <span>{location || "Location not specified"}</span>
               </div>
 
@@ -433,7 +476,7 @@ export default function PropertyListingPage() {
                     <p className="font-medium">{propertyFeatures.yearBuilt || "N/A"}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center p-3 border rounded-md">
                   <SquareFootIcon className="h-5 w-5 mr-2 text-primary" />
                   <div>
@@ -448,7 +491,7 @@ export default function PropertyListingPage() {
                     <p className="font-medium">{propertyFeatures.propertyType || "N/A"}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center p-3 border rounded-md">
                   <Calendar className="h-5 w-5 mr-2 text-primary" />
                   <div>
@@ -467,6 +510,36 @@ export default function PropertyListingPage() {
                   <div className="prose prose-sm max-w-none dark:prose-invert">
                     {description || blogContent ? parse(description || blogContent) : "No description available."}
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Map Section */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Property Location
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {hasValidCoordinates ? (
+                    <div className="h-[400px] w-full relative">
+                      <PropertyMap
+                        key={mapKey} 
+                        coordinates={{
+                          lat: Number.parseFloat(coordinates.lat),
+                          lng: Number.parseFloat(coordinates.lng),
+                        }}
+                        address={location}
+                        propertyTitle={name}
+                      />
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center border rounded-md bg-muted/20">
+                      <MapPin className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                      <p className="text-muted-foreground">No map location available for this property</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -527,11 +600,10 @@ export default function PropertyListingPage() {
                   <Separator className="my-4" />
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      
                       <span className="text-muted-foreground">Price per sq ft</span>
                       <span className="font-medium">{price && area ? formatPrice(price / area) : "Not available"}</span>
                     </div>
-                    
+
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Purpose</span>
                       <span className="font-medium">{purpose}</span>
@@ -560,7 +632,7 @@ export default function PropertyListingPage() {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <Button variant="outline" onClick={()=>CallSeller()} className="w-full justify-start">
+                    <Button variant="outline" onClick={() => CallSeller()} className="w-full justify-start">
                       <Phone className="mr-2 h-4 w-4" />
                       Contact Seller
                     </Button>
