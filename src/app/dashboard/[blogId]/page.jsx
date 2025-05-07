@@ -802,7 +802,7 @@ export default function PropertyListingPage() {
                     <CardDescription>Interested in this property? Send a message to the seller.</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <form onSubmit={handleContactSubmit} className="space-y-4">
+                    <form onSubmit={handleContactSubmit} className="space-y-4" id="form">
                       <div className="space-y-2">
                         <label htmlFor="name" className="text-sm font-medium">
                           Your Name

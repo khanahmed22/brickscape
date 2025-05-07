@@ -5,8 +5,6 @@ import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
-import { SupabaseProvider } from "./utils/SupabaseContext";
-
 import { auth } from "@clerk/nextjs/server";
 import { dark } from "@clerk/themes";
 
@@ -33,14 +31,14 @@ export const checkRole = (role) => {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning={true}>
+      <body className={inter.className} suppressHydrationWarning={true}>
         <ClerkProvider
           appearance={{
             baseTheme: dark,
           }}
         >
-          <SupabaseProvider>
+       
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -53,7 +51,7 @@ export default function RootLayout({ children }) {
               <Footer />
               <Toaster richColors />
             </ThemeProvider>
-          </SupabaseProvider>
+         
         </ClerkProvider>
       </body>
     </html>

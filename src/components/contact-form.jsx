@@ -96,7 +96,7 @@ export default function ContactForm() {
             </Button>
           </motion.div>
         ) : (
-          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-4" id="contactDetails">
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>

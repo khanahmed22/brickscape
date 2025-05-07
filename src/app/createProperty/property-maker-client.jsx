@@ -289,7 +289,7 @@ export default function PropertyMakerClient() {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold">Ad Maker</h1>
+              <h1 className="text-3xl font-bold">Property Creation</h1>
               <p className="text-muted-foreground mt-1">Create your Property</p>
             </div>
           </div>
@@ -647,7 +647,7 @@ export default function PropertyMakerClient() {
           </Tabs>
 
           <div className="mt-6">
-            <form onSubmit={createTask}>
+            <form onSubmit={createTask} id="createProperty">
               <div className="flex justify-end">
                 <Button
                   type="submit"

@@ -214,7 +214,7 @@ export default function MapSelector({ onLocationSelect, initialAddress, initialC
 
   return (
     <div className="space-y-4">
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex gap-2" id="form">
         <Input
           type="text"
           value={searchQuery}
