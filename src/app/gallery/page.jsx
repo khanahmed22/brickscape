@@ -278,8 +278,8 @@ export default function HomePage() {
 
         <div className="relative z-10 max-w-5xl w-full px-4 md:px-8">
           <motion.div initial="hidden" animate="visible" variants={fadeIn} className="text-center mb-8">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">Find Your Dream Property</h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-4">Find Your Dream Property</h1>
+            <p className="text-lg text-white/90 max-w-xl mx-auto">
               Discover the perfect home, apartment, or commercial space that fits your needs
             </p>
           </motion.div>
@@ -534,6 +534,7 @@ export default function HomePage() {
                           src={property.fileURL || "/placeholder.svg?height=400&width=600"}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           alt={property.name || "Property image"}
+                          loading="lazy"
                         />
                       </div>
                       <Badge variant={getPurposeBadgeVariant(property.purpose)} className="absolute top-3 left-3">

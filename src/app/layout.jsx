@@ -10,21 +10,20 @@ import { SupabaseProvider } from "./utils/SupabaseContext";
 import { auth } from "@clerk/nextjs/server";
 import { dark } from "@clerk/themes";
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Brickscape",
-  description:"",
+  description: "",
   icons: {
-    icon: "/brickscapeLogo.svg", 
+    icon: "/brickscapeLogo.svg",
   },
 };
 
-export const viewport  = {
+export const viewport = {
   initialScale: 1,
-  width: 'device-width'
-}
+  width: "device-width",
+};
 
 export const checkRole = (role) => {
   const { sessionClaims } = auth();
@@ -36,28 +35,24 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClerkProvider appearance={{
-        baseTheme: dark,
-      }}>
-        <SupabaseProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-       
-          <Navbar/>
-           <div className="mt-16">
-            {children}
-           </div>
-           
-           
-          
-            
-            <Footer />
-            <Toaster richColors />
-          </ThemeProvider>
+        <ClerkProvider
+          appearance={{
+            baseTheme: dark,
+          }}
+        >
+          <SupabaseProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Navbar />
+              <div className="mt-16">{children}</div>
+
+              <Footer />
+              <Toaster richColors />
+            </ThemeProvider>
           </SupabaseProvider>
         </ClerkProvider>
       </body>

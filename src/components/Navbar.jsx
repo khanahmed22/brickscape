@@ -90,7 +90,7 @@ export default function Navbar() {
           <ModeToggle />
 
           <SignedIn>
-            <Button onClick={()=>router.push("/dashboard")}>Dashboard</Button>
+            <Button className="max-md:hidden" onClick={()=>router.push("/dashboard")}>Dashboard</Button>
           </SignedIn>
 
           <SignedIn>

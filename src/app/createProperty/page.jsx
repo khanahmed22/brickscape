@@ -1,15 +1,16 @@
 import { Suspense } from "react"
 import PropertyMakerClient from "./property-maker-client"
+import Loading from "./loading"
 
 export const metadata = {
   title: "Create Property",
 }
 
-export default function CreateBlogPage() {
+export default function CreatePropertyPage() {
 
   
   return (
-    <Suspense fallback={<div className="p-6">Loading...</div>}>
+    <Suspense fallback={<Loading/>}>
       <PropertyMakerClient />
     </Suspense>
   )
