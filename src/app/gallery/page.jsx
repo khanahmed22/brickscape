@@ -293,11 +293,11 @@ export default function HomePage() {
             <Tabs defaultValue="buy" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="px-4 pt-4">
                 <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto">
-                  <TabsTrigger value="buy" onClick={() => setPurpose("buy")}>
+                  <TabsTrigger value="buy" aria-label="buy" onClick={() => setPurpose("buy")}>
                     <Home className="mr-2 h-4 w-4" />
                     Buy
                   </TabsTrigger>
-                  <TabsTrigger value="rent" onClick={() => setPurpose("rent")}>
+                  <TabsTrigger value="rent" aria-label="rent" onClick={() => setPurpose("rent")}>
                     <Building className="mr-2 h-4 w-4" />
                     Rent
                   </TabsTrigger>
