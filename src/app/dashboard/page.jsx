@@ -345,7 +345,7 @@ export default function Dashboard() {
                                 task.fileURL || "https://placehold.co/220x400"
                               }
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                              alt={task.name || "Blog image"}
+                              alt={task.name || "Property image"}
                             />
                           </div>
                           {task.created_at && (

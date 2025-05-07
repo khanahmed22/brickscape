@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import Image from "next/image"
 export default function HomePage() {
   const { user } = useUser()
   const { session } = useSession()
@@ -530,11 +530,14 @@ export default function HomePage() {
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div className="relative">
                       <div className="aspect-video overflow-hidden bg-muted">
-                        <img
+                        <Image
                           src={property.fileURL || "/placeholder.svg?height=400&width=600"}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           alt={property.name || "Property image"}
-                          loading="lazy"
+                          width="300"
+                          height="300"
+                          layout="responsive"
+                          sizes="(max-width: 700px) 100vw, 700px"
                         />
                       </div>
                       <Badge variant={getPurposeBadgeVariant(property.purpose)} className="absolute top-3 left-3">

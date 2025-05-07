@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import Image from "next/image"
 import {
   DollarSign,
   ImageUp,
@@ -600,10 +601,13 @@ export default function PropertyMakerClient() {
                       <div className="grid grid-cols-1 gap-4">
                         {/* Main Image Display */}
                         <div className="relative aspect-[4/3] w-[200px] overflow-hidden rounded-lg border bg-muted">
-                          <img
+                          <Image
                             src={coverImageURL || fileURLs[0]}
                             alt="Main view"
                             className="h-[200px] w-[200px] object-contain  object-center"
+                            height="200"
+                            width="200"
+                            layout="responsive"
                           />
                           <div className="absolute top-2 right-2">
                             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
@@ -623,10 +627,13 @@ export default function PropertyMakerClient() {
                               }`}
                               onClick={() => setCoverImageURL(url)}
                             >
-                              <img
+                              <Image
                                 src={url || "/placeholder.svg"}
                                 alt={`Thumbnail ${index + 1}`}
                                 className="h-full w-full object-cover object-center"
+                                width={300}
+                                height={300}
+                                layout="responsive"
                               />
                             </div>
                           ))}
