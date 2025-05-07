@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Brickscape",
-  description: "",
+  description: "From Pixels to Bricks",
   icons: {
     icon: "/brickscapeLogo.svg",
   },
