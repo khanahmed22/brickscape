@@ -172,21 +172,18 @@ export default function Dashboard() {
           </p>
           <div className="flex flex-col md:flex-row justify-between max-md:justify-center max-md:items-center items-start md:items-center mb-8">
             <div>
-              <div className="flex items-center gap-x-3">
+              <div className="flex items-center justify-start gap-x-3">
                 <h1 className="text-3xl font-bold  md:text-4xl max-md:text-lg">
-                  Your Published Properties
+                  My Properties
                 
                 </h1>
 
                 
                
-                  
-
+              
               </div>
               
-              <p className="text-muted-foreground mt-1 max-md:text-sm">
-                Manage your properties
-              </p>
+              
             </div>
             <Button
               size="lg"
@@ -199,8 +196,8 @@ export default function Dashboard() {
               ) : (
                 <>
                   <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90" />
-                  <span className="hidden">
-                  Create New Blog
+                  <span className="max-md:hidden">
+                  Create New Property
                   </span>
                   
                 </>
@@ -212,7 +209,7 @@ export default function Dashboard() {
           <div className="mb-8 space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search property"
                   className="pl-10 h-12"
@@ -223,7 +220,7 @@ export default function Dashboard() {
               <div className="flex gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-12 ">
+                    <Button variant="outline" className="h-12 max-md:h-10">
                       <Filter className="mr-2 h-4 w-4" />
                       <span className="max-md:hidden">Sort</span>
                     </Button>
@@ -246,7 +243,7 @@ export default function Dashboard() {
                   <Button
                     variant={viewMode === "grid" ? "default" : "ghost"}
                     size="icon"
-                    className="h-10 w-10"
+                    className="h-10 w-10 max-md:h-8"
                     onClick={() => setViewMode("grid")}
                   >
                     <LayoutGrid className="h-4 w-4" />
@@ -254,7 +251,7 @@ export default function Dashboard() {
                   <Button
                     variant={viewMode === "list" ? "default" : "ghost"}
                     size="icon"
-                    className="h-10 w-10"
+                    className="h-10 w-10 max-md:h-8"
                     onClick={() => setViewMode("list")}
                   >
                     <LayoutList className="h-4 w-4" />

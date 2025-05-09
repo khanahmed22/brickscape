@@ -301,7 +301,7 @@ export default function PropertySearchPage() {
       {/* Search Section */}
       <section className="py-8 px-4 md:px-8 lg:px-12 ">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center mb-6">
+          <div className="flex items-center mb-6 max-md:flex-col max-md:gap-y-2">
             <Button
               variant="ghost"
               onClick={() => router.push("/")}
@@ -310,7 +310,7 @@ export default function PropertySearchPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
-            <h1 className="text-2xl font-bold">Property Search</h1>
+            <h1 className="text-2xl max-md:text-lg font-bold">Property Search</h1>
           </div>
 
           <motion.div
@@ -463,8 +463,8 @@ export default function PropertySearchPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
-              <h2 className="text-2xl font-bold">Search Results</h2>
-              <p className="text-muted-foreground mt-1">
+              <h2 className="text-2xl font-bold max-md:text-lg">Search Results</h2>
+              <p className="text-muted-foreground mt-1 max-md:text-sm">
                 {filteredProperties.length}{" "}
                 {filteredProperties.length === 1 ? "property" : "properties"}{" "}
                 found
@@ -736,7 +736,7 @@ export default function PropertySearchPage() {
                       )}
                     </div>
                     <CardHeader className="pb-2">
-                      <CardTitle className="line-clamp-1 text-xl">
+                      <CardTitle className="line-clamp-1 text-xl max-md:text-lg">
                         {property.name}
                       </CardTitle>
                     </CardHeader>
