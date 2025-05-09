@@ -246,7 +246,7 @@ export default function PropertySearchPage() {
     setPropertyType("")
     setPriceRange("")
 
-    router.push("/property-search")
+    router.push("/propertySearch")
   }
 
 
@@ -430,23 +430,26 @@ export default function PropertySearchPage() {
                     </SelectContent>
                   </Select>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 max-md:flex-col-reverse">
                     <Button
-                      size="lg"
+                      
                       className="h-12 flex-1"
                       onClick={handleSearch}
                     >
                       Search Properties
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="h-12"
-                      onClick={clearFilters}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+
+                    <div className="flex items-center justify-center">
+                      <Button
+                      
+                        variant="outline"
+                        className="h-12 max-md:h-8 max-md:w-[100px]"
+                        onClick={clearFilters}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -609,6 +612,8 @@ export default function PropertySearchPage() {
                 </Badge>
               )}
 
+         
+          
               {priceRange && (
                 <Badge variant="secondary" className="flex items-center gap-1">
                   Price:{" "}
@@ -646,7 +651,9 @@ export default function PropertySearchPage() {
               >
                 Clear all filters
               </Button>
-            </div>
+
+              </div>
+           
           )}
 
           {/* Loading State */}

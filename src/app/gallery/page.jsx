@@ -384,14 +384,12 @@ export default function HomePage() {
             className="flex justify-center mt-8 gap-4"
           >
             <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 text-sm">
-              {properties ? properties.length : "0"}+ Properties
+              1000+ Properties
             </Badge>
             <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 text-sm">
-              {uniqueAreas.length}+ Locations
+              300+ Locations
             </Badge>
-            <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 text-sm">
-              {uniquePropertyTypes.length} Property Types
-            </Badge>
+            
           </motion.div>
         </div>
       </section>
