@@ -788,6 +788,10 @@ export default function PropertyListingPage() {
                         <Phone className="mr-2 h-4 w-4" />
                         Contact Seller
                       </Button>
+                      <Button variant="outline"  className="flex gap-x-2 w-full justify-start">
+                      <WhatsappIcon size={23} className="rounded-3xl"/>
+                      <a className="flex" href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    </Button>
                       <Button variant="outline" className="w-full justify-start">
                         <User className="mr-2 h-4 w-4" />
                         View Profile

@@ -260,7 +260,11 @@ export default function PropertyListingsPage() {
       setContactMessage("")
       setIsSending(false)
     }, 1500)
+
+    
   }
+
+  
 
   // Check if coordinates are valid for displaying the map
   const hasValidCoordinates = useMemo(() => {
@@ -635,6 +639,11 @@ export default function PropertyListingsPage() {
                     <Button variant="outline" onClick={() => CallSeller()} className="w-full justify-start">
                       <Phone className="mr-2 h-4 w-4" />
                       Contact Seller
+                    </Button>
+
+                    <Button variant="outline"  className="flex gap-x-2 w-full justify-start">
+                      <WhatsappIcon size={23} className="rounded-3xl"/>
+                      <a className="flex" href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                     </Button>
                     <Button
                       variant="outline"
