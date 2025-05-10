@@ -88,7 +88,7 @@ export default function SignInPage() {
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>
               By signing in, you agree to our{" "}
-              <Link href="/terms" className="text-primary hover:underline">
+              <Link href="/terms-conditions" className="text-primary hover:underline">
                 Terms of Service
               </Link>{" "}
               and{" "}
