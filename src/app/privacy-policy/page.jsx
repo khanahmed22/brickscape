@@ -98,7 +98,7 @@ export default function PrivacyPolicy() {
             <h3 className="text-xl font-semibold mb-2">7. Changes to This Policy</h3>
             <Separator className="mb-3" />
             <p>
-              We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date.
+              We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the &quot;Last Updated&quot; date.
             </p>
           </section>
 

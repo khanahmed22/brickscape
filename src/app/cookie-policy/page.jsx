@@ -30,7 +30,7 @@ export default function CookiePolicy() {
         <CardContent className="space-y-6 text-sm md:text-base">
           <div>
             <p className="mb-4">
-              This Cookie Policy explains how Brickscape ("we", "our", or "us") uses cookies and similar technologies to
+              This Cookie Policy explains how Brickscape (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) uses cookies and similar technologies to
               recognize you when you visit our website.
             </p>
           </div>
