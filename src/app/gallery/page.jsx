@@ -389,8 +389,120 @@ export default function HomePage() {
             <Badge variant="secondary" className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 text-sm">
               300+ Locations
             </Badge>
+
+             <Button size="lg" onClick={() => router.push("/property-search")}>
+                Browse Properties
+              </Button>
             
           </motion.div>
+        </div>
+      </section>
+
+      
+
+      {/* Featured Properties Section */}
+      <section className="py-16 px-4 md:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeIn}
+            className="flex items-center mb-8"
+          >
+            <Sparkles className="h-5 w-5 text-primary mr-2" />
+            <h2 className="text-3xl font-bold">Featured Properties</h2>
+          </motion.div>
+
+          {dataReady && properties && properties.length > 0 ? (
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+              {properties.slice(0, 3).map((property) => (
+                <motion.div key={property.id} variants={itemVariants}>
+                  <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div className="relative">
+                      <div className="aspect-video overflow-hidden bg-muted">
+                        <Image
+                          src={property.fileURL || "/placeholder.svg?height=400&width=600"}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          alt={property.name || "Property image"}
+                          width="300"
+                          height="300"
+                          layout="responsive"
+                          sizes="(max-width: 700px) 100vw, 700px"
+                        />
+                      </div>
+                      <Badge variant={getPurposeBadgeVariant(property.purpose)} className="absolute top-3 left-3">
+                        {property.purpose === "rent" ? "For Rent" : "For Sale"}
+                      </Badge>
+                    </div>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="line-clamp-1">{property.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pb-4">
+                      <div className="flex items-center text-muted-foreground mb-2">
+                        <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                        <span className="line-clamp-1">{property.location || "Location not specified"}</span>
+                      </div>
+                      <div className="flex items-center font-medium text-lg">
+                        <DollarSign className="h-5 w-5 mr-1 flex-shrink-0" />
+                        <span>{formatPrice(property.price)}</span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-0 pb-4">
+                      <Button
+                        className="w-full group"
+                        onClick={() => handleViewProperty(property.slug)}
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          "Loading..."
+                        ) : (
+                          <>
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Property
+                            <ArrowUpRight className="ml-auto h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                          </>
+                        )}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="overflow-hidden">
+                  <div className="aspect-video bg-muted animate-pulse" />
+                  <CardHeader className="pb-2">
+                    <div className="h-6 bg-muted animate-pulse rounded-md" />
+                  </CardHeader>
+                  <CardContent className="pb-4">
+                    <div className="space-y-2">
+                      <div className="h-4 bg-muted animate-pulse rounded-md w-3/4" />
+                      <div className="h-6 bg-muted animate-pulse rounded-md w-1/2" />
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-0 pb-4">
+                    <div className="h-10 bg-muted animate-pulse rounded-md w-full" />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-12 text-center">
+            <Button variant="outline" size="lg" onClick={() => router.push("/propertySearch")} className="group">
+              Explore All Properties
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" />
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -498,112 +610,6 @@ export default function HomePage() {
               </div>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Featured Properties Section */}
-      <section className="py-16 px-4 md:px-8 lg:px-12">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeIn}
-            className="flex items-center mb-8"
-          >
-            <Sparkles className="h-5 w-5 text-primary mr-2" />
-            <h2 className="text-3xl font-bold">Featured Properties</h2>
-          </motion.div>
-
-          {dataReady && properties && properties.length > 0 ? (
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={containerVariants}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6"
-            >
-              {properties.slice(0, 3).map((property) => (
-                <motion.div key={property.id} variants={itemVariants}>
-                  <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                    <div className="relative">
-                      <div className="aspect-video overflow-hidden bg-muted">
-                        <Image
-                          src={property.fileURL || "/placeholder.svg?height=400&width=600"}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          alt={property.name || "Property image"}
-                          width="300"
-                          height="300"
-                          layout="responsive"
-                          sizes="(max-width: 700px) 100vw, 700px"
-                        />
-                      </div>
-                      <Badge variant={getPurposeBadgeVariant(property.purpose)} className="absolute top-3 left-3">
-                        {property.purpose === "rent" ? "For Rent" : "For Sale"}
-                      </Badge>
-                    </div>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="line-clamp-1">{property.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-4">
-                      <div className="flex items-center text-muted-foreground mb-2">
-                        <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="line-clamp-1">{property.location || "Location not specified"}</span>
-                      </div>
-                      <div className="flex items-center font-medium text-lg">
-                        <DollarSign className="h-5 w-5 mr-1 flex-shrink-0" />
-                        <span>{formatPrice(property.price)}</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="pt-0 pb-4">
-                      <Button
-                        className="w-full group"
-                        onClick={() => handleViewProperty(property.slug)}
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          "Loading..."
-                        ) : (
-                          <>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Property
-                            <ArrowUpRight className="ml-auto h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                          </>
-                        )}
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="overflow-hidden">
-                  <div className="aspect-video bg-muted animate-pulse" />
-                  <CardHeader className="pb-2">
-                    <div className="h-6 bg-muted animate-pulse rounded-md" />
-                  </CardHeader>
-                  <CardContent className="pb-4">
-                    <div className="space-y-2">
-                      <div className="h-4 bg-muted animate-pulse rounded-md w-3/4" />
-                      <div className="h-6 bg-muted animate-pulse rounded-md w-1/2" />
-                    </div>
-                  </CardContent>
-                  <CardFooter className="pt-0 pb-4">
-                    <div className="h-10 bg-muted animate-pulse rounded-md w-full" />
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          <div className="mt-12 text-center">
-            <Button variant="outline" size="lg" onClick={() => router.push("/propertySearch")} className="group">
-              Explore All Properties
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" />
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -742,7 +748,7 @@ export default function HomePage() {
               way.
             </motion.p>
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={() => router.push("/propertySearch")}>
+              <Button size="lg" onClick={() => router.push("/property-search")}>
                 Browse Properties
               </Button>
               <Button size="lg" variant="outline" onClick={() => router.push("/contact")}>
