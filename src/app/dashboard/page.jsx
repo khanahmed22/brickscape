@@ -76,7 +76,7 @@ export default function Dashboard() {
 
   function handleCreateButton() {
     setLoading(true);
-    router.push("/createProperty");
+    router.push("/create-property");
   }
 
   function handleViewBlog(slug) {
