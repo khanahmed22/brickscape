@@ -200,7 +200,7 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Brickscape - All rights reserved.
             </p>
             <div className="mt-4 md:mt-0 flex space-x-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-primary transition-colors">
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors">
                 Privacy Policy
               </Link>
               <Link href="/terms" className="hover:text-primary transition-colors">

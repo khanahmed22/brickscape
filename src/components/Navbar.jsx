@@ -74,7 +74,7 @@ export default function Navbar() {
 
           
 
-          <NavLink href="/propertySearch" active={isActive("/propertySearch")}>
+          <NavLink href="/property-search" active={isActive("/property-search")}>
             Buy • Rent
           </NavLink>
 
@@ -159,8 +159,8 @@ export default function Navbar() {
                   </SignedIn>
 
                   <MobileNavLink
-                    href="/propertySearch"
-                    active={isActive("/dashboard")}
+                    href="/property-search"
+                    active={isActive("/property-search")}
                   >
                     Buy/Sell
                   </MobileNavLink>

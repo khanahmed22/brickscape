@@ -246,7 +246,7 @@ export default function PropertySearchPage() {
     setPropertyType("")
     setPriceRange("")
 
-    router.push("/propertySearch")
+    router.push("/property-search")
   }
 
 
